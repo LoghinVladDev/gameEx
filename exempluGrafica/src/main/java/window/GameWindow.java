@@ -4,6 +4,8 @@ import assets.AssetList;
 import assets.SpriteSheet;
 import assets.tile.Tile;
 import character.*;
+import item.Item;
+import item.Key;
 import listener.MovementListener;
 import map.Map;
 import player.Player;
@@ -88,6 +90,8 @@ public class GameWindow extends JFrame {
 
         this.map = new Map(this.horizontalSpriteCount, this.verticalSpriteCount, this.sheet);
 
+        this.map.setKeyCount(5);
+
         map.loadMap(Map.GAME_MAP_1);
 
         this.player = map.getPlayer();
@@ -159,6 +163,8 @@ public class GameWindow extends JFrame {
         for(Enemy e : this.enemies){
             e.draw(graphics);
         }
+
+        Item.getGameWorldItems().forEach(e->e.draw(graphics));
 
         this.ui.draw(graphics);
 
@@ -314,14 +320,47 @@ public class GameWindow extends JFrame {
         }
     }
 
+    private void countKeys(){
+        this.ui.setKeyCount(this.player.getKeyCount());
+    }
+
     public void update(){
+        System.out.println(this.player.getKeyCount() + ", " + this.map.getKeyCount());
+
+        if(this.player.getKeyCount() >= this.map.getKeyCount())
+            this.waitBeforeExit();
+
         if(this.player.getHeartsCount() > 0) {
             this.player.update(this.map);
-        } else {
+        } else if(this.player.getHeartsCount() <= 0) {
             this.waitBeforeExit();
         }
         this.enemyAI.update();
         this.rockProjectiles.removeIf(r -> !r.update());
+
+        Item toBeRemoved = null;
+
+//        Item.getGameWorldItems().forEach(e->{
+//            if(e.isToBeDeSpawned()){
+//                toBeRemoved = e;
+//            } else
+//                e.update();
+//        });
+
+        for(Item i : Item.getGameWorldItems()){
+            if(i.isToBeDeSpawned())
+                toBeRemoved = i;
+            else {
+                i.update();
+            }
+        }
+
+        this.countKeys();
+
+        if(toBeRemoved != null){
+            Item.getGameWorldItems().remove(toBeRemoved);
+        }
+
         this.ui.update();
         this.redraw();
     }

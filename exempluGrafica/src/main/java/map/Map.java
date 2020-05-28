@@ -16,9 +16,8 @@ import player.PlayerStatus;
 import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Scanner;
 
 public class Map {
     private Tile[][] mapLayout;
@@ -27,6 +26,8 @@ public class Map {
     private int height;
 
     private Player player;
+
+    private int keyCount = 0;
 
     private List<Enemy> enemyList;
 
@@ -48,6 +49,10 @@ public class Map {
         return height;
     }
 
+    public void setKeyCount(int keyCount) {
+        this.keyCount = keyCount;
+    }
+
     public Map(int width, int height, SpriteSheet spriteSheet){
         this.width = width;
         this.height = height;
@@ -56,8 +61,37 @@ public class Map {
         this.enemyList = new ArrayList<>();
     }
 
+    public int getKeyCount() {
+        return keyCount;
+    }
+
+    private java.util.Map<Tile, Boolean> generateKeys(List<Tile> castle){
+        java.util.Map<Tile, Boolean> hasKey = new HashMap<>();
+
+        if(this.keyCount > castle.size())
+            this.keyCount = castle.size();
+
+        for(Tile t : castle){
+            hasKey.put(t, false);
+        }
+        int keyCount = this.keyCount;
+        while(keyCount-- > 0){
+            int castleNo = (int)(Math.random() * castle.size());
+
+            while(hasKey.get(castle.get(castleNo))){
+                castleNo = (int)(Math.random() * castle.size());
+            }
+
+            hasKey.put(castle.get(castleNo), true);
+        }
+
+        return hasKey;
+    }
+
     public void loadMap(String path) {
         AssetList assetType;
+
+        List<Tile> castles = new ArrayList<>();
 
         /*
          * INCARCARE OBIECTE STATICE
@@ -70,10 +104,14 @@ public class Map {
 
                     if(assetType.equals(AssetList.TOWER))
                         this.mapLayout[i][j] = new Tower(this.spriteSheet);
-                    else if(assetType.equals(AssetList.CASTLE_GRASS_TILE))
+                    else if(assetType.equals(AssetList.CASTLE_GRASS_TILE)) {
                         this.mapLayout[i][j] = new Castle(this.spriteSheet, Castle.CASTLE_GRASS);
-                    else if(assetType.equals(AssetList.CASTLE_SAND_TILE))
+                        castles.add(this.mapLayout[i][j]);
+                    }
+                    else if(assetType.equals(AssetList.CASTLE_SAND_TILE)) {
                         this.mapLayout[i][j] = new Castle(this.spriteSheet, Castle.CASTLE_SAND);
+                        castles.add(this.mapLayout[i][j]);
+                    }
                     else
                         this.mapLayout[i][j] = new Tile(assetType, this.spriteSheet);
                     this.mapLayout[i][j].setLocation(j,i);
@@ -107,6 +145,14 @@ public class Map {
         catch (FileNotFoundException e){
             System.out.println(e.toString());
         }
+
+        java.util.Map<Tile, Boolean> hasKey = this.generateKeys(castles);
+        hasKey.forEach((castle,willSpawnKey) -> {
+            if(willSpawnKey){
+                castle.addOnDropKey(this.player);
+            }
+        });
+
     }
 
     public void drawMap(Graphics graphics){
@@ -149,8 +195,8 @@ public class Map {
             return PlayerStatus.PLAYER_COLLIDE;
         if(this.mapLayout[y][x].getType().equals(AssetList.CASTLE_SAND_TILE))
             return PlayerStatus.PLAYER_COLLIDE;
-        if(this.mapLayout[y][x].getType().equals(AssetList.DAMAGED_CASTLE_GRASS_TILE))
-            return PlayerStatus.PLAYER_COLLIDE;
+//        if(this.mapLayout[y][x].getType().equals(AssetList.DAMAGED_CASTLE_GRASS_TILE))
+//            return PlayerStatus.PLAYER_COLLIDE;
         if(this.mapLayout[y][x].getType().equals(AssetList.WATER_TILE))
             return PlayerStatus.PLAYER_IN_WATER;
         if(this.mapLayout[y][x].getType().equals(AssetList.TREE_TILE))

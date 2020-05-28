@@ -2,6 +2,7 @@ package assets.tile;
 
 import assets.AssetList;
 import assets.SpriteSheet;
+import player.Player;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -39,6 +40,10 @@ public class Tile {
 
     public void destroy(){
 //        System.out.println("BOLOVAN PESTE TILE LA x = " + this.x + ", y = " + this.y);
+    }
+
+    public void addOnDropKey(Player player){
+
     }
 
     public void drawAt(int x, int y, Graphics graphics){

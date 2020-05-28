@@ -28,6 +28,7 @@ public class RockThrowerEnemy extends Enemy {
     private float moveSpeed = 1.5f;
     public RockThrowerEnemy(int x, int y, SpriteSheet sheet){
         super(x,y);
+        super.sheet = sheet;
 
         this.patrolHorizStartingPoint = (int)this.x;
 
@@ -45,6 +46,10 @@ public class RockThrowerEnemy extends Enemy {
         this.hitCapacity -= this.takesDamageOnRock;
 
         if(this.hitCapacity < 0) {
+            if(!this.dead){
+                this.dropHeart();
+            }
+
             this.dead = true;
         }
         else
@@ -107,51 +112,68 @@ public class RockThrowerEnemy extends Enemy {
         float height = this.y - this.player.getY();
         float width = this.player.getX() - this.x;
 
-        boolean firstHalf = false;
+        float distance = (float) Math.sqrt(Math.pow(Math.abs(height),2) + Math.pow(Math.abs(width),2));
 
-        int quadrant = 0;
+//        System.out.println(distance);
 
-        if(height >=0 && width >= 0)
-            quadrant = 1;
-        if(height >=0 && width < 0)
-            quadrant = 2;
-        if(height < 0 && width < 0)
-            quadrant = 3;
-        if(height < 0 && width >= 0)
-            quadrant = 4;
+        if(distance > 300) {
+            boolean firstHalf = false;
 
-        if(Math.abs(height) > Math.abs(width)) {
-            if(quadrant == 1 || quadrant == 3)
-                firstHalf = false;
-            else
-                firstHalf = true;
-        }
-        else{
-            if(quadrant == 1 || quadrant == 3)
-                firstHalf = true;
-            else
-                firstHalf = false;
-        }
+            int quadrant = 0;
+
+            if (height >= 0 && width >= 0)
+                quadrant = 1;
+            if (height >= 0 && width < 0)
+                quadrant = 2;
+            if (height < 0 && width < 0)
+                quadrant = 3;
+            if (height < 0 && width >= 0)
+                quadrant = 4;
+
+            if (Math.abs(height) > Math.abs(width)) {
+                if (quadrant == 1 || quadrant == 3)
+                    firstHalf = false;
+                else
+                    firstHalf = true;
+            } else {
+                if (quadrant == 1 || quadrant == 3)
+                    firstHalf = true;
+                else
+                    firstHalf = false;
+            }
 
 //        System.out.println(quadrant + ", " + firstHalf);
 
-        if(quadrant == 1 && firstHalf || quadrant == 4 && !firstHalf)
-            this.movementDirection = Directions.RIGHT;
-        else if(quadrant == 1 && !firstHalf || quadrant == 2 && firstHalf)
-            this.movementDirection = Directions.UP;
-        else if(quadrant == 2 && !firstHalf || quadrant == 3 && firstHalf)
-            this.movementDirection = Directions.LEFT;
-        else if(quadrant == 3 && !firstHalf || quadrant == 4 && firstHalf)
-            this.movementDirection = Directions.DOWN;
+            if (quadrant == 1 && firstHalf || quadrant == 4 && !firstHalf)
+                this.movementDirection = Directions.RIGHT;
+            else if (quadrant == 1 && !firstHalf || quadrant == 2 && firstHalf)
+                this.movementDirection = Directions.UP;
+            else if (quadrant == 2 && !firstHalf || quadrant == 3 && firstHalf)
+                this.movementDirection = Directions.LEFT;
+            else if (quadrant == 3 && !firstHalf || quadrant == 4 && firstHalf)
+                this.movementDirection = Directions.DOWN;
 
 //        System.out.println(this.movementDirection);
 
-        switch (this.movementDirection){
-            case RIGHT: this.x = this.x + this.moveSpeed;   break;
-            case LEFT:  this.x = this.x - this.moveSpeed;   break;
-            case DOWN: this.y = this.y + this.moveSpeed;    break;
-            case UP: this.y = this.y - this.moveSpeed;      break;
+            switch (this.movementDirection) {
+                case RIGHT:
+                    this.x = this.x + this.moveSpeed;
+                    break;
+                case LEFT:
+                    this.x = this.x - this.moveSpeed;
+                    break;
+                case DOWN:
+                    this.y = this.y + this.moveSpeed;
+                    break;
+                case UP:
+                    this.y = this.y - this.moveSpeed;
+                    break;
+            }
         }
+        else {
+//            System.out.println("ARUNC CHIATRA IN PLAYER");
+        }
+
     }
 
 //    private
@@ -160,7 +182,7 @@ public class RockThrowerEnemy extends Enemy {
 
 //        this.checkForPlayer();
 
-        System.out.println("pnm");
+//        System.out.println("pnm");
 
         this.x = this.x + patrolSpeed * (super.facingRight ? 1 : -1);
         if(super.facingRight)

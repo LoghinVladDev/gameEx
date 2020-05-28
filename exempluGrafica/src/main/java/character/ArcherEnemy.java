@@ -7,6 +7,7 @@ public class ArcherEnemy extends Enemy {
 
     public ArcherEnemy(int x, int y, SpriteSheet sheet){
         super(x,y);
+        super.sheet = sheet;
 
         super.enemySpriteLeft = sheet.getAsset(AssetList.ENEMY_ARCHER_LEFT);
         super.enemySpriteRight = sheet.getAsset(AssetList.ENEMY_ARCHER_RIGHT);

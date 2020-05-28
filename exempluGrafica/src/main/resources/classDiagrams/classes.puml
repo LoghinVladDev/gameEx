@@ -5,6 +5,9 @@ class GameWindow{
     List<Enemy> enemies : private
 
     List<Projectile> projectiles : private
+
+    void update() : private
+    void redraw(Graphics) : private
 }
 
 class Player{
@@ -20,11 +23,11 @@ class ArrowProjectile{
 }
 
 abstract class Projectile{
-    float speed : private
+    float speed : protected
 }
 
 abstract class Enemy{
-    float movementSpeed : private
+    float movementSpeed : protected
 }
 
 class RegularEnemy{

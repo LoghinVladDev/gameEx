@@ -2,6 +2,8 @@ package character;
 
 import assets.AssetList;
 import assets.SpriteSheet;
+import item.Heart;
+import item.Item;
 import map.Map;
 import player.Directions;
 import player.Player;
@@ -13,6 +15,14 @@ import java.io.BufferedReader;
 public abstract class Enemy {
     protected BufferedImage enemySpriteRight;
     protected BufferedImage enemySpriteLeft;
+
+    protected SpriteSheet sheet;
+
+    public static final int LOW_DROP_CHANCE = 5;
+    public static final int MEDIUM_DROP_CHANCE = 15;
+    public static final int HIGH_DROP_CHANCE = 40;
+
+    private int dropChance;
 
     protected int frameTimeout;
 
@@ -30,6 +40,21 @@ public abstract class Enemy {
     }
 
     protected boolean facingRight = true;
+
+    protected void dropHeart(){
+        switch (this.player.getHeartsCount()){
+            case 3 : this.dropChance = LOW_DROP_CHANCE; break;
+            case 2 : this.dropChance = MEDIUM_DROP_CHANCE; break;
+            case 1 : this.dropChance = HIGH_DROP_CHANCE; break;
+            default: this.dropChance = 0;
+        }
+
+        boolean drops = ((int)(Math.random() * 100) < this.dropChance);
+
+        if(drops){
+            Item.getGameWorldItems().add(new Heart(this.player, this.sheet, this.x, this.y));
+        }
+    }
 
     protected boolean isFollowingPlayer;
 //

@@ -26,6 +26,11 @@ public class SpriteSheet {
         return spriteImage;
     }
 
+    /**
+     * Returns BufferedImage for selected asset type
+     * @param assetType Selected asset type
+     * @return BufferedImage of the selected sprite
+     */
     public BufferedImage getAsset(AssetList assetType){
         switch (assetType){
             case GRASS_TILE:                return this.crop(0,0);

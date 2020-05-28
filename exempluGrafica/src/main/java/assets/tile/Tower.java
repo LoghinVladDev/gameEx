@@ -16,7 +16,7 @@ public class Tower extends Tile{
     }
 
     public void destroy() {
-        System.out.println("BOLOVAN PESTE TURN LA x = " + this.x + ", y = " + this.y);
+//        System.out.println("BOLOVAN PESTE TURN LA x = " + this.x + ", y = " + this.y);
         if(this.type.equals(AssetList.DAMAGED_CASTLE_GRASS_TILE))
             return;
 

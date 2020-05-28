@@ -20,6 +20,7 @@ import java.nio.Buffer;
 public class Player {
     boolean combinedMovement = false;
 
+    private int keyCount = 0;
     private static final int REGULAR_ENEMY_DETECTION_CIRCLE_RADIUS = 300;
     private static final int ROCK_THROWER_ENEMY_DETECTION_CIRCLE_RADIUS = 600;
 
@@ -342,4 +343,17 @@ public class Player {
                 break;
         }
     }
+
+    public void heal(){
+        this.heartsCount++;
+    }
+
+    public void addKey(){
+        this.keyCount++;
+    }
+
+    public int getKeyCount() {
+        return keyCount;
+    }
+
 }

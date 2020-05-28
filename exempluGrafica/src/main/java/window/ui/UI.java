@@ -14,21 +14,30 @@ public class UI {
     private Player player;
 
     private BufferedImage heartSprite;
+    private BufferedImage keySprite;
     private GameWindow window;
 
-    private static final int HORIZ_OFFSET = 20;
-    private static final int VERT_OFFSET = 20;
+    private static final int HEART_HORIZ_OFFSET = 20;
+    private static final int HEART_VERT_OFFSET = 20;
+    private static final int KEY_HORIZ_OFFSET = 20;
+    private static final int KEY_VERT_OFFSET = 100;
 
     private int heartCount;
+    private int keyCount = 0;
 
     public UI(GameWindow gameWindow, SpriteSheet sheet){
         this.heartSprite = sheet.getAsset(AssetList.HEART_ICON);
+        this.keySprite = sheet.getAsset(AssetList.KEY_ICON);
         this.window = gameWindow;
     }
 
     public UI setPlayer(Player p){
         this.player = p;
         return this;
+    }
+
+    public void setKeyCount(int keyCount){
+        this.keyCount = keyCount;
     }
 
     public void update(){
@@ -39,13 +48,24 @@ public class UI {
         for(int i = 0; i < heartCount; i++){
             g.drawImage(
                     this.heartSprite,
-                    HORIZ_OFFSET + i * SpriteSheet.SPRITE_WIDTH,
-                    VERT_OFFSET ,
+                    HEART_HORIZ_OFFSET + i * SpriteSheet.SPRITE_WIDTH,
+                    HEART_VERT_OFFSET ,
                     SpriteSheet.SPRITE_WIDTH,
                     SpriteSheet.SPRITE_HEIGHT,
                     null
             );
         }
+        for(int i = 0; i < keyCount; i++){
+            g.drawImage(
+                    this.keySprite,
+                    KEY_HORIZ_OFFSET + i * SpriteSheet.SPRITE_WIDTH,
+                    KEY_VERT_OFFSET ,
+                    SpriteSheet.SPRITE_WIDTH,
+                    SpriteSheet.SPRITE_HEIGHT,
+                    null
+            );
+        }
+
     }
 
 }

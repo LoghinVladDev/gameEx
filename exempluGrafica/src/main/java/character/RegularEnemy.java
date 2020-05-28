@@ -29,6 +29,7 @@ public class RegularEnemy extends Enemy {
 
     public RegularEnemy(int x, int y, SpriteSheet sheet){
         super(x,y);
+        super.sheet = sheet;
 
         this.patrolHorizStartingPoint = (int)this.x;
 
@@ -46,8 +47,13 @@ public class RegularEnemy extends Enemy {
 
         this.hitCapacity -= this.takesDamageOnRock;
 
-        if(this.hitCapacity < 0)
+        if(this.hitCapacity < 0) {
+            if(!this.dead){
+                this.dropHeart();
+            }
+
             this.dead = true;
+        }
         else
             this.timeout = GET_HIT_TIMEOUT; /// PAIN STATE
 
@@ -161,7 +167,7 @@ public class RegularEnemy extends Enemy {
 
 //        this.checkForPlayer();
 
-        System.out.println("pnm");
+//        System.out.println("pnm");
 
         this.x = this.x + patrolSpeed * (super.facingRight ? 1 : -1);
         if(super.facingRight)
