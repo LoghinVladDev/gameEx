@@ -7,6 +7,7 @@ import assets.AssetList;
 import assets.SpriteSheet;
 import character.Enemy;
 import character.RegularEnemy;
+import character.RockThrowerEnemy;
 import listener.MovementListener;
 import map.Map;
 import projectile.ProjectileDirection;
@@ -18,10 +19,20 @@ import java.nio.Buffer;
 
 public class Player {
     boolean combinedMovement = false;
+
+    private static final int REGULAR_ENEMY_DETECTION_CIRCLE_RADIUS = 300;
+    private static final int ROCK_THROWER_ENEMY_DETECTION_CIRCLE_RADIUS = 600;
+
     private BufferedImage playerSpriteLeft;
     private BufferedImage playerSpriteRight;
     private final float FRAME_PLAYER_MOVE_SPEED = 5;
     private final float FRAME_PLAYER_COLLIDE_SPEED = 5;
+
+    private int heartsCount = 3;
+
+    public int getHeartsCount() {
+        return heartsCount;
+    }
 
     private MovementListener movementListener;
 
@@ -47,6 +58,8 @@ public class Player {
         return projectileDirection;
     }
 
+    private boolean dead = false;
+
     private float x;
     private float y;
 
@@ -56,6 +69,16 @@ public class Player {
 
     public float getY() {
         return y;
+    }
+
+    public void getHit(){
+        this.heartsCount--;
+        if(this.heartsCount <= 0)
+            this.dead = true;
+    }
+
+    public boolean isDead() {
+        return dead;
     }
 
     public Player(float x, float y, SpriteSheet spriteSheet){
@@ -184,16 +207,46 @@ public class Player {
     }
 
     private void getDetectedByEnemies(){
-        Ellipse2D playerDetectionCircle = new Ellipse2D.Float(this.x-250, this.y-250, 500, 500);
+        Ellipse2D regularEnemyDetectionCircle = new Ellipse2D.Float(
+                this.x-(float) REGULAR_ENEMY_DETECTION_CIRCLE_RADIUS / 2,
+                this.y- (float)REGULAR_ENEMY_DETECTION_CIRCLE_RADIUS / 2,
+                REGULAR_ENEMY_DETECTION_CIRCLE_RADIUS,
+                REGULAR_ENEMY_DETECTION_CIRCLE_RADIUS
+        );
+
+        Ellipse2D rockThrowerEnemyDetectionCircle = new Ellipse2D.Float(
+                this.x - (float) ROCK_THROWER_ENEMY_DETECTION_CIRCLE_RADIUS / 2,
+                this.y- (float)ROCK_THROWER_ENEMY_DETECTION_CIRCLE_RADIUS / 2,
+                ROCK_THROWER_ENEMY_DETECTION_CIRCLE_RADIUS,
+                ROCK_THROWER_ENEMY_DETECTION_CIRCLE_RADIUS
+        );
+
         for(Enemy e : this.enemies){
-            if(playerDetectionCircle.contains(e.getX(), e.getY())){
-//                System.out.println(e);
-                if(!e.isFollowingPlayer()) {
-                    System.out.println(playerDetectionCircle.getCenterX() + " " + playerDetectionCircle.getCenterY() + ", dim = " + playerDetectionCircle.getHeight() + ", " + playerDetectionCircle.getWidth());
-                    System.out.println(e.getX() + ", " + e.getY());
-                    e.setFollowingPlayer(true);
+
+            try{
+                RegularEnemy castedRegularEnemy = (RegularEnemy)e;
+
+                if(regularEnemyDetectionCircle.contains(castedRegularEnemy.getX(), e.getY()))
+                    if(!castedRegularEnemy.isFollowingPlayer())
+                        castedRegularEnemy.setFollowingPlayer(true);
+
+            } catch ( ClassCastException ignored ){
+                try{
+                    RockThrowerEnemy castedRockThrowerEnemy = (RockThrowerEnemy) e;
+
+                    if(rockThrowerEnemyDetectionCircle.contains(castedRockThrowerEnemy.getX(), e.getY()))
+                        if(!castedRockThrowerEnemy.isFollowingPlayer())
+                            castedRockThrowerEnemy.setFollowingPlayer(true);
+                } catch ( ClassCastException ignored1 ){
+
                 }
             }
+
+//            if(regularEnemyDetectionCircle.contains(e.getX(), e.getY())){
+////                if(!e.isFollowingPlayer()) {
+////                    e.setFollowingPlayer(true);
+////                }
+//            }
         }
     }
 

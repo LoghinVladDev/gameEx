@@ -3,6 +3,7 @@ package character;
 import map.Map;
 import player.Player;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EnemyAI {
@@ -19,6 +20,13 @@ public class EnemyAI {
     }
 
     private List<Enemy> enemies;
+
+    private List<Enemy> deadEnemies = new ArrayList<>();
+
+    public List<Enemy> getDeadEnemies() {
+        return deadEnemies;
+    }
+
     private Player player;
 
     private Map map;
@@ -56,8 +64,10 @@ public class EnemyAI {
             e.update();
         }
 
-        if(deadEnemy != null)
+        if(deadEnemy != null) {
             this.enemies.remove(deadEnemy);
+            this.deadEnemies.add(deadEnemy);
+        }
     }
 
 }

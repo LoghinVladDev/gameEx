@@ -3,19 +3,22 @@ package window;
 import assets.AssetList;
 import assets.SpriteSheet;
 import assets.tile.Tile;
-import character.Enemy;
-import character.EnemyAI;
+import character.*;
 import listener.MovementListener;
 import map.Map;
 import player.Player;
 import projectile.ProjectileDirection;
 import projectile.RockProjectile;
+import sql.Connection;
+import window.ui.UI;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferStrategy;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,12 +27,21 @@ public class GameWindow extends JFrame {
     private static final String SPRITE_SHEET_DEFAULT_LOCATION = "/textures/SpriteSheet.png";
 
     private int horizontalSpriteCount,verticalSpriteCount;
+
+    private int score = 0;
+
+    private UI ui;
+
     private Map map;
     private Canvas drawingCanvas;//pe asta vom desena
     private Player player;
     private List<Enemy> enemies;
     private SpriteSheet sheet;
     private EnemyAI enemyAI;
+
+    private static final int FRAMES_BEFORE_SHUTDOWN_DEFAULT = 300;
+
+    private int framesBeforeShutdown = FRAMES_BEFORE_SHUTDOWN_DEFAULT;
 
     public List<Enemy> getEnemies() {
         return enemies;
@@ -81,6 +93,8 @@ public class GameWindow extends JFrame {
         this.player = map.getPlayer();
         this.player.setMovementListener(this.movementListener);
         this.enemies = map.getEnemyList();
+
+        this.ui = new UI(this, this.sheet).setPlayer(this.player);
 
         for (Enemy e : this.enemies) {
             e.setPlayer(this.player);
@@ -145,6 +159,8 @@ public class GameWindow extends JFrame {
         for(Enemy e : this.enemies){
             e.draw(graphics);
         }
+
+        this.ui.draw(graphics);
 
         bufferStrategy.show();
         graphics.dispose();//scapam de graficele astea
@@ -222,11 +238,101 @@ public class GameWindow extends JFrame {
 
     }
 
+    private int countHighScore(){
+        int score = 0;
+
+        for(Enemy e : this.enemyAI.getDeadEnemies()){
+            try{
+                RegularEnemy e1 = (RegularEnemy) e;
+
+                if(e1.isDead())
+                    score += 100;
+
+                System.out.println(score);
+
+            } catch ( ClassCastException ignored ){
+
+                try{
+
+                    RockThrowerEnemy e2 = (RockThrowerEnemy) e;
+
+                    if(e2.isDead())
+                        score += 50;
+                    System.out.println(score);
+
+                } catch ( ClassCastException ignored1 ){
+
+                    try{
+
+                        ArcherEnemy e3 = (ArcherEnemy) e;
+
+                        if(e3.isDead())
+                            score += 150;
+                        System.out.println(score);
+
+                    } catch ( ClassCastException ignored2 ){
+
+                    }
+
+                }
+
+            }
+        }
+
+        return score;
+    }
+
+    private void updateScoreIntoDatabase(String playerName){
+        try{
+
+            PreparedStatement sqlStatement = Connection
+                    .getInstance()
+                    .connect()
+                    .getConnection()
+                    .prepareStatement("INSERT INTO high_scores (score_holder, score) values (?, ?)");
+
+            sqlStatement.setString(1, playerName);
+            sqlStatement.setInt(2, this.score);
+
+            sqlStatement.executeUpdate();
+
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+    private void waitBeforeExit(){
+        if(this.framesBeforeShutdown > 0)
+            this.framesBeforeShutdown--;
+        else {
+
+            this.score = this.countHighScore();
+
+            this.updateScoreIntoDatabase("Larisa");
+
+            System.exit(0);
+        }
+    }
+
     public void update(){
-        this.player.update(this.map);
+        if(this.player.getHeartsCount() > 0) {
+            this.player.update(this.map);
+        } else {
+            this.waitBeforeExit();
+        }
         this.enemyAI.update();
-        this.rockProjectiles.removeIf(r-> !r.update());
+        this.rockProjectiles.removeIf(r -> !r.update());
+        this.ui.update();
         this.redraw();
+    }
+
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
     }
 
 }

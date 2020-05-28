@@ -19,7 +19,11 @@ public class RegularEnemy extends Enemy {
     private int takesDamageOnRock = 35;
 
     private int timeout = 0;
+
     private static final int GET_HIT_TIMEOUT = 30; // in numar de cadre, 30 = 0.5s
+    private static final int HIT_PLAYER_TIME = 90;
+
+    private int timeNearPlayer = 0;
 
     private float moveSpeed = 2;
 
@@ -59,8 +63,23 @@ public class RegularEnemy extends Enemy {
             return;
         }
 
-        if(this.collidesWithPlayer())
+        if(this.collidesWithPlayer()) {
+
+            if(this.timeNearPlayer < HIT_PLAYER_TIME){
+                this.timeNearPlayer++;
+            }
+            else if(this.timeNearPlayer == HIT_PLAYER_TIME){
+                this.player.getHit();
+                this.timeNearPlayer = 0;
+            }
+
             return;
+        } else {
+            this.timeNearPlayer = 0;
+        }
+
+        if(this.player.isDead())
+            this.isFollowingPlayer = false;
 
         if(!this.isFollowingPlayer)
             this.patrol();
@@ -141,6 +160,8 @@ public class RegularEnemy extends Enemy {
     private void patrol(){
 
 //        this.checkForPlayer();
+
+        System.out.println("pnm");
 
         this.x = this.x + patrolSpeed * (super.facingRight ? 1 : -1);
         if(super.facingRight)

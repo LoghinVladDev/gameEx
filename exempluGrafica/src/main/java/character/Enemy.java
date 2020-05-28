@@ -32,10 +32,12 @@ public abstract class Enemy {
     protected boolean facingRight = true;
 
     protected boolean isFollowingPlayer;
+//
+//    public void getHit(){
+//        this.dead = true;
+//    }
 
-    public void getHit(){
-        this.dead = true;
-    }
+    public abstract void getHit();
 
     public boolean isFollowingPlayer() {
         return isFollowingPlayer;
@@ -56,6 +58,11 @@ public abstract class Enemy {
 
 
     public boolean collidesWithPlayer(){
+        if(this.player.isDead()) {
+            this.playerCollisionDirection = Directions.NOTHING;
+            return false;
+        }
+
         boolean cBotLeft = false;
         boolean cBotRight= false;
         boolean cTopLeft = false;
