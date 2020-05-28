@@ -69,6 +69,7 @@ public class RockProjectile {
 
             if(r.intersects(enemyRectangle)){
                 e.getHit();
+                this.speed = 0;
             }
         }
     }

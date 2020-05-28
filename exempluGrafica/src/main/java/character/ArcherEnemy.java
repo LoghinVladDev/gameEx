@@ -12,6 +12,10 @@ public class ArcherEnemy extends Enemy {
         super.enemySpriteRight = sheet.getAsset(AssetList.ENEMY_ARCHER_RIGHT);
     }
 
+    public void getHit(){
+        this.dead = true;
+    }
+
     @Override
     public void update() {
         this.swapDirection();

@@ -14,6 +14,13 @@ public class RegularEnemy extends Enemy {
 
     private int patrolSpeed = 3;
 
+    private int hitCapacity = 100;
+
+    private int takesDamageOnRock = 35;
+
+    private int timeout = 0;
+    private static final int GET_HIT_TIMEOUT = 30; // in numar de cadre, 30 = 0.5s
+
     private float moveSpeed = 2;
 
     public RegularEnemy(int x, int y, SpriteSheet sheet){
@@ -29,12 +36,28 @@ public class RegularEnemy extends Enemy {
 
     private Directions movementDirection;
 
+    public void getHit(){
 
+//        System.out.println("Am fost lovit!");
+
+        this.hitCapacity -= this.takesDamageOnRock;
+
+        if(this.hitCapacity < 0)
+            this.dead = true;
+        else
+            this.timeout = GET_HIT_TIMEOUT; /// PAIN STATE
+
+    }
 
     @Override
     public void update() {
         float oldX = this.x;
         float oldY = this.y;
+
+        if(this.timeout > 0){
+            this.timeout--;
+            return;
+        }
 
         if(this.collidesWithPlayer())
             return;

@@ -20,6 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameWindow extends JFrame {
+
+    private static final String SPRITE_SHEET_DEFAULT_LOCATION = "/textures/SpriteSheet.png";
+
     private int horizontalSpriteCount,verticalSpriteCount;
     private Map map;
     private Canvas drawingCanvas;//pe asta vom desena
@@ -69,7 +72,7 @@ public class GameWindow extends JFrame {
         this.drawingCanvas.setFocusable(false);
         this.movementListener = new MovementListener();
 
-        this.sheet = new SpriteSheet("/textures/PaooGameSpriteSheet4.png");
+        this.sheet = new SpriteSheet(SPRITE_SHEET_DEFAULT_LOCATION);
 
         this.map = new Map(this.horizontalSpriteCount, this.verticalSpriteCount, this.sheet);
 

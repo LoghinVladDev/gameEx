@@ -12,6 +12,10 @@ public class RockThrowerEnemy extends Enemy {
         super.enemySpriteRight = sheet.getAsset(AssetList.ENEMY_ROCK_THROWER_RIGHT);
     }
 
+    public void getHit(){
+        this.dead = true;
+    }
+
     @Override
     public void update() {
         this.swapDirection();
