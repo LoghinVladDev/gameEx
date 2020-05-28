@@ -1,0 +1,61 @@
+@startuml
+
+class GameWindow{
+    Player : private
+    List<Enemy> enemies : private
+
+    List<Projectile> projectiles : private
+
+    void update() : private
+    void redraw(Graphics) : private
+}
+
+class Player{
+
+}
+
+class RockProjectile{
+
+}
+
+class ArrowProjectile{
+
+}
+
+abstract class Projectile{
+    float speed : protected
+}
+
+abstract class Enemy{
+    float movementSpeed : protected
+}
+
+class RegularEnemy{
+
+}
+
+class ArcherEnemy{
+
+}
+
+class RockThrowerEnemy{
+
+}
+
+Projectile ^-- ArrowProjectile
+Projectile ^-- RockProjectile
+
+Enemy ^-- RegularEnemy
+Enemy ^-- ArcherEnemy
+Enemy ^-- RockThrowerEnemy
+
+GameWindow "1" o-- "1" Player
+GameWindow "1" o-- "1.." Enemy
+
+Player "1" *-- "1.." RockProjectile
+ArcherEnemy "1" *-- "1.." ArrowProjectile
+RockThrowerEnemy "1" *-- "1.." RockProjectile
+
+GameWindow "1" o-- "1.." Projectile
+
+@enduml
