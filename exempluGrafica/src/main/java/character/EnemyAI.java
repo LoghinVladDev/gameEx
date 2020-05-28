@@ -46,9 +46,18 @@ public class EnemyAI {
         if(!this.isInitialised())
             return;
 
+        Enemy deadEnemy = null;
+
         for(Enemy e : this.enemies){
+            if(e.isDead()){
+                deadEnemy = e;
+                continue;
+            }
             e.update();
         }
+
+        if(deadEnemy != null)
+            this.enemies.remove(deadEnemy);
     }
 
 }

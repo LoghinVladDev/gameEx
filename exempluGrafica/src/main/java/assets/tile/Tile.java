@@ -38,7 +38,7 @@ public class Tile {
     }*/
 
     public void destroy(){
-        System.out.println("BOLOVAN PESTE TILE LA x = " + this.x + ", y = " + this.y);
+//        System.out.println("BOLOVAN PESTE TILE LA x = " + this.x + ", y = " + this.y);
     }
 
     public void drawAt(int x, int y, Graphics graphics){

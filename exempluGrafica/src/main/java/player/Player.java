@@ -1,9 +1,12 @@
 package player;
 
+import java.awt.geom.Ellipse2D;
+import java.util.ArrayList;
 import java.util.List;
 import assets.AssetList;
 import assets.SpriteSheet;
 import character.Enemy;
+import character.RegularEnemy;
 import listener.MovementListener;
 import map.Map;
 import projectile.ProjectileDirection;
@@ -34,6 +37,12 @@ public class Player {
 
     private ProjectileDirection projectileDirection = ProjectileDirection.RIGHT;
 
+    private List<Enemy> surroundingEnemies;
+
+    public List<Enemy> getSurroundingEnemies() {
+        return surroundingEnemies;
+    }
+
     public ProjectileDirection getNextProjectileDirection() {
         return projectileDirection;
     }
@@ -54,7 +63,9 @@ public class Player {
         this.y = y;
         this.playerSpriteLeft = spriteSheet.getAsset(AssetList.PLAYER_LEFT);
         this.playerSpriteRight = spriteSheet.getAsset(AssetList.PLAYER_RIGHT);
+        this.surroundingEnemies = new ArrayList<>();
     }
+
 
 
     public void setEnemies(List<Enemy> enemies) {
@@ -104,15 +115,17 @@ public class Player {
     public void update(Map map){
         Directions playerOrientation = getInputDirection();
 
+        this.getDetectedByEnemies();
+
         switch (playerOrientation){
-            case DOWN: this.projectileDirection = ProjectileDirection.DOWN;                 break;
-            case UP: this.projectileDirection = ProjectileDirection.UP;                     break;
-            case LEFT: this.projectileDirection = ProjectileDirection.LEFT;                 break;
-            case RIGHT: this.projectileDirection = ProjectileDirection.RIGHT;               break;
-            case LEFT_DOWN: this.projectileDirection = ProjectileDirection.BOTTOMLEFT;      break;
-            case LEFT_UP: this.projectileDirection = ProjectileDirection.TOPLEFT;           break;
-            case RIGHT_DOWN: this.projectileDirection = ProjectileDirection.BOTTOMRIGHT;    break;
-            case RIGHT_UP: this.projectileDirection = ProjectileDirection.TOPRIGHT;         break;
+            case DOWN: this.projectileDirection = ProjectileDirection.DOWN;                                             break;
+            case UP: this.projectileDirection = ProjectileDirection.UP;                                                 break;
+            case LEFT: this.projectileDirection = ProjectileDirection.LEFT;                 this.facingRight = false;   break;
+            case RIGHT: this.projectileDirection = ProjectileDirection.RIGHT;               this.facingRight = true;    break;
+            case LEFT_DOWN: this.projectileDirection = ProjectileDirection.BOTTOMLEFT;      this.facingRight = false;   break;
+            case LEFT_UP: this.projectileDirection = ProjectileDirection.TOPLEFT;           this.facingRight = false;   break;
+            case RIGHT_DOWN: this.projectileDirection = ProjectileDirection.BOTTOMRIGHT;    this.facingRight = true;    break;
+            case RIGHT_UP: this.projectileDirection = ProjectileDirection.TOPRIGHT;         this.facingRight = true;    break;
         }
 
         if(locationStatus.equals(PlayerStatus.PLAYER_IN_WATER))
@@ -143,19 +156,24 @@ public class Player {
 
         List<PlayerStatus> status = map.isPlayerAllowed((int)this.x, (int)this.y, (int)this.x + SpriteSheet.SPRITE_WIDTH - 1, (int)this.y + SpriteSheet.SPRITE_HEIGHT - 1, playerOrientation);
 
-        System.out.println(status);
+//        System.out.println(status);
 
-        /*
-        if(status.contains(PlayerStatus.PLAYER_COLLIDE)){
-            this.x = oldX;
-            this.y = oldY;
-        }*/
+//        System.out.println(this.surroundingEnemies);
 
         if(status.contains(PlayerStatus.PLAYER_COLLIDE_LEFT) || status.contains(PlayerStatus.PLAYER_COLLIDE_RIGHT))
             this.x = oldX;
 
         if(status.contains(PlayerStatus.PLAYER_COLLIDE_TOP) || status.contains(PlayerStatus.PLAYER_COLLIDE_BOTTOM))
             this.y = oldY;
+
+        for(Enemy e : this.surroundingEnemies){
+            if(!e.isDead())
+                if(!e.getPlayerCollisionDirection().equals(Directions.NOTHING)){
+                    Directions relativePlayerPosition = e.getPlayerCollisionDirection();
+
+                    this.stopIfEnemyIsAround(oldX, oldY, playerOrientation, relativePlayerPosition);
+                }
+        }
 
         if(status.contains(PlayerStatus.PLAYER_COLLIDE))
             this.locationStatus = PlayerStatus.PLAYER_COLLIDE;
@@ -165,136 +183,110 @@ public class Player {
             this.locationStatus = PlayerStatus.PLAYER_NO_COLLIDE;
     }
 
-    /*
-    public void moveLeft(){
-        this.combinedMovement = true;
-        this.projectileDirection = ProjectileDirection.LEFT;
-        this.x = x - actualPlayerSpeed; this.facingRight = false;
-        //System.out.println("Player moved left, new coords : x = " +  this.x + ", y = " + this.y);
+    private void getDetectedByEnemies(){
+        Ellipse2D playerDetectionCircle = new Ellipse2D.Float(this.x-250, this.y-250, 500, 500);
+        for(Enemy e : this.enemies){
+            if(playerDetectionCircle.contains(e.getX(), e.getY())){
+//                System.out.println(e);
+                if(!e.isFollowingPlayer()) {
+                    System.out.println(playerDetectionCircle.getCenterX() + " " + playerDetectionCircle.getCenterY() + ", dim = " + playerDetectionCircle.getHeight() + ", " + playerDetectionCircle.getWidth());
+                    System.out.println(e.getX() + ", " + e.getY());
+                    e.setFollowingPlayer(true);
+                }
+            }
+        }
     }
 
-    public void moveRight(){
-        this.projectileDirection = ProjectileDirection.RIGHT;
-        //System.out.println("Player moved right, new coords : x = " +  this.x + ", y = " + this.y);
-        this.x = x + actualPlayerSpeed; this.facingRight = true;
+    private void stopIfEnemyIsAround(float oldX, float oldY, Directions playerDir, Directions relativePlayerPosition){
+        switch (playerDir){
+            case RIGHT:
+                if (
+                        relativePlayerPosition.equals(Directions.LEFT) ||
+                        relativePlayerPosition.equals(Directions.LEFT_UP) ||
+                        relativePlayerPosition.equals(Directions.LEFT_DOWN)
+                )
+                    this.x = oldX;
+                break;
+            case LEFT:
+                if (
+                        relativePlayerPosition.equals(Directions.RIGHT_DOWN) ||
+                        relativePlayerPosition.equals(Directions.RIGHT_UP) ||
+                        relativePlayerPosition.equals(Directions.RIGHT)
+                )
+                    this.x = oldX;
+                break;
+            case DOWN:
+                if (
+                        relativePlayerPosition.equals(Directions.UP) ||
+                        relativePlayerPosition.equals(Directions.RIGHT_UP) ||
+                        relativePlayerPosition.equals(Directions.LEFT_UP)
+                )
+                    this.y = oldY;
+                break;
+            case UP:
+                if (
+                        relativePlayerPosition.equals(Directions.DOWN) ||
+                        relativePlayerPosition.equals(Directions.RIGHT_DOWN) ||
+                        relativePlayerPosition.equals(Directions.LEFT_DOWN)
+                )
+                    this.y = oldY;
+                break;
+
+            case RIGHT_DOWN:
+                if (
+                        relativePlayerPosition.equals(Directions.LEFT) ||
+                                relativePlayerPosition.equals(Directions.LEFT_UP) ||
+                                relativePlayerPosition.equals(Directions.LEFT_DOWN)
+                )
+                    this.x = oldX;
+                if (
+                        relativePlayerPosition.equals(Directions.UP) ||
+                                relativePlayerPosition.equals(Directions.RIGHT_UP) ||
+                                relativePlayerPosition.equals(Directions.LEFT_UP)
+                )
+                    this.y = oldY;
+                break;
+            case LEFT_UP:
+                if (
+                        relativePlayerPosition.equals(Directions.RIGHT_DOWN) ||
+                                relativePlayerPosition.equals(Directions.RIGHT_UP) ||
+                                relativePlayerPosition.equals(Directions.RIGHT)
+                )
+                    this.x = oldX;
+                if (
+                        relativePlayerPosition.equals(Directions.DOWN) ||
+                                relativePlayerPosition.equals(Directions.RIGHT_DOWN) ||
+                                relativePlayerPosition.equals(Directions.LEFT_DOWN)
+                )
+                    this.y = oldY;
+                break;
+            case RIGHT_UP:
+                if (
+                        relativePlayerPosition.equals(Directions.LEFT) ||
+                                relativePlayerPosition.equals(Directions.LEFT_UP) ||
+                                relativePlayerPosition.equals(Directions.LEFT_DOWN)
+                )
+                    this.x = oldX;
+                if (
+                        relativePlayerPosition.equals(Directions.DOWN) ||
+                                relativePlayerPosition.equals(Directions.RIGHT_DOWN) ||
+                                relativePlayerPosition.equals(Directions.LEFT_DOWN)
+                )
+                    this.y = oldY;
+            case LEFT_DOWN:
+                if (
+                        relativePlayerPosition.equals(Directions.RIGHT_DOWN) ||
+                                relativePlayerPosition.equals(Directions.RIGHT_UP) ||
+                                relativePlayerPosition.equals(Directions.RIGHT)
+                )
+                    this.x = oldX;
+                if (
+                        relativePlayerPosition.equals(Directions.UP) ||
+                                relativePlayerPosition.equals(Directions.RIGHT_UP) ||
+                                relativePlayerPosition.equals(Directions.LEFT_UP)
+                )
+                    this.y = oldY;
+                break;
+        }
     }
-
-    public void moveUp(){
-        this.combinedMovement = true;
-        this.projectileDirection = ProjectileDirection.UP;
-        //System.out.println("Player moved up, new coords : x = " +  this.x + ", y = " + this.y);
-        this.y = y - actualPlayerSpeed;
-    }
-
-    public void moveDown(){
-        this.combinedMovement = true;
-        this.projectileDirection = ProjectileDirection.DOWN;
-        //System.out.println("Player moved down, new coords : x = " +  this.x + ", y = " + this.y);
-        this.y = y + actualPlayerSpeed;
-    }
-
-     */
-
-    /*
-    public void update(MovementListener movementListener, Map map){
-        this.combinedMovement = false;
-
-        if(locationStatus.equals(PlayerStatus.PLAYER_IN_WATER))
-            this.actualPlayerSpeed = (float) (0.6 * FRAME_PLAYER_MOVE_SPEED);
-        else
-            if(locationStatus.equals(PlayerStatus.PLAYER_NO_COLLIDE))
-                this.actualPlayerSpeed = FRAME_PLAYER_MOVE_SPEED;
-            else
-                if(locationStatus.equals(PlayerStatus.PLAYER_COLLIDE))
-                    this.actualPlayerSpeed = FRAME_PLAYER_COLLIDE_SPEED;
-
-        float oldX = this.x;
-        float oldY = this.y;
-
-        if(movementListener.isUp()){
-            this.moveUp();
-        }
-
-        PlayerStatus statusUp = map.isPlayerAllowed((int)this.x, (int)this.y, (int)this.x + SpriteSheet.SPRITE_WIDTH - 1, (int)this.y + SpriteSheet.SPRITE_HEIGHT - 1);
-
-        if(statusUp.equals(PlayerStatus.PLAYER_COLLIDE)){
-            this.x = oldX;
-            this.y = oldY;
-        }
-
-        oldX = this.x;
-        oldY = this.y;
-
-        if(movementListener.isDown()){
-            this.moveDown();
-        }
-
-        PlayerStatus statusDown = map.isPlayerAllowed((int)this.x, (int)this.y, (int)this.x + SpriteSheet.SPRITE_WIDTH - 1, (int)this.y + SpriteSheet.SPRITE_HEIGHT - 1);
-
-        if(statusDown.equals(PlayerStatus.PLAYER_COLLIDE)){
-            this.x = oldX;
-            this.y = oldY;
-        }
-
-        oldX = this.x;
-        oldY = this.y;
-
-        if(movementListener.isLeft()){
-            this.moveLeft();
-        }
-
-        PlayerStatus statusLeft = map.isPlayerAllowed((int)this.x, (int)this.y, (int)this.x + SpriteSheet.SPRITE_WIDTH - 1, (int)this.y + SpriteSheet.SPRITE_HEIGHT - 1);
-
-        if(statusLeft.equals(PlayerStatus.PLAYER_COLLIDE)){
-            this.x = oldX;
-            this.y = oldY;
-        }
-
-        oldX = this.x;
-        oldY = this.y;
-
-        if(movementListener.isRight()){
-            this.moveRight();
-        }
-
-        PlayerStatus statusRight = map.isPlayerAllowed((int)this.x, (int)this.y, (int)this.x + SpriteSheet.SPRITE_WIDTH - 1, (int)this.y + SpriteSheet.SPRITE_HEIGHT - 1);
-
-        if(statusRight.equals(PlayerStatus.PLAYER_COLLIDE)){
-            this.x = oldX;
-            this.y = oldY;
-        }
-
-        if(
-                statusDown.equals(PlayerStatus.PLAYER_COLLIDE) ||
-                statusLeft.equals(PlayerStatus.PLAYER_COLLIDE) ||
-                statusUp.equals(PlayerStatus.PLAYER_COLLIDE) ||
-                statusRight.equals(PlayerStatus.PLAYER_COLLIDE)
-        )
-            this.locationStatus = PlayerStatus.PLAYER_COLLIDE;
-        else
-            if(
-                statusDown.equals(PlayerStatus.PLAYER_IN_WATER) ||
-                        statusLeft.equals(PlayerStatus.PLAYER_IN_WATER) ||
-                        statusUp.equals(PlayerStatus.PLAYER_IN_WATER) ||
-                        statusRight.equals(PlayerStatus.PLAYER_IN_WATER)
-            )
-                this.locationStatus = PlayerStatus.PLAYER_IN_WATER;
-            else
-                this.locationStatus = PlayerStatus.PLAYER_NO_COLLIDE;
-
-        if(movementListener.isUp() && movementListener.isRight())
-            this.projectileDirection = ProjectileDirection.TOPRIGHT;
-        else
-            if(movementListener.isUp() && movementListener.isLeft())
-                this.projectileDirection = ProjectileDirection.TOPLEFT;
-            else
-                if(movementListener.isRight() && movementListener.isDown())
-                    this.projectileDirection = ProjectileDirection.BOTTOMRIGHT;
-                else
-                    if(movementListener.isLeft() && movementListener.isDown())
-                        this.projectileDirection = ProjectileDirection.BOTTOMLEFT;
-
-    }
-
-     */
 }

@@ -139,6 +139,7 @@ public class Map {
     }
 
 
+
     public PlayerStatus detectCollision(int x, int y){
         if(this.mapLayout[y][x].getType().equals(AssetList.TOWER))
             return PlayerStatus.PLAYER_COLLIDE;

@@ -2,8 +2,10 @@ package projectile;
 
 import assets.AssetList;
 import assets.SpriteSheet;
+import character.Enemy;
 import map.Map;
 import player.PlayerStatus;
+import window.GameWindow;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -19,6 +21,7 @@ public class RockProjectile {
     private double y;
     private BufferedImage spriteImage;
     private ProjectileDirection projectileDirection;
+    private GameWindow gameWindow;
 
     private double speed = DEFAULT_PROJECTILE_SPEED;
 
@@ -38,7 +41,8 @@ public class RockProjectile {
         }
     }
 
-    public RockProjectile(int x, int y, ProjectileDirection projectileDirection, SpriteSheet sheet, Map map, PlayerStatus status){
+    public RockProjectile(int x, int y, ProjectileDirection projectileDirection, SpriteSheet sheet, Map map, PlayerStatus status, GameWindow gameWindow){
+        this.gameWindow = gameWindow;
         this.spriteImage = this.loadProjectileForDirection(projectileDirection, sheet);
 
         if(status.equals(PlayerStatus.PLAYER_IN_WATER))
@@ -49,6 +53,24 @@ public class RockProjectile {
         this.x = x;
         this.y = y;
         this.projectileDirection = projectileDirection;
+    }
+
+    private void detectEnemyCollision(int x1, int y1, int x2, int y2){
+        Rectangle r = new Rectangle(x1, y1, x2 - x1, y2 - y1);
+        for(Enemy e : this.gameWindow.getEnemies()){
+            Rectangle enemyRectangle = new Rectangle(
+                    (int)e.getX(),
+                    (int)e.getY(),
+                    SpriteSheet.SPRITE_WIDTH,
+                    SpriteSheet.SPRITE_HEIGHT
+            );
+
+//            System.out.println(r.toString() + ", " + enemyRectangle.toString());
+
+            if(r.intersects(enemyRectangle)){
+                e.getHit();
+            }
+        }
     }
 
     public boolean update(){
@@ -102,6 +124,8 @@ public class RockProjectile {
         int x2 = (int) (this.x + SpriteSheet.SPRITE_WIDTH - 1);
         int y1 = (int) this.y;
         int y2 = (int) (this.y + SpriteSheet.SPRITE_HEIGHT - 1);
+
+        this.detectEnemyCollision(x1, y1, x2, y2);
 
         int x1Mat = x1/SpriteSheet.SPRITE_WIDTH;
         int x2Mat = x2/SpriteSheet.SPRITE_WIDTH;

@@ -28,6 +28,10 @@ public class GameWindow extends JFrame {
     private SpriteSheet sheet;
     private EnemyAI enemyAI;
 
+    public List<Enemy> getEnemies() {
+        return enemies;
+    }
+
     private List<RockProjectile> rockProjectiles;
 
     public static final int DEFAULT_FPS = 60;
@@ -144,7 +148,17 @@ public class GameWindow extends JFrame {
     }
 
     public void playerThrowsRock(){
-        this.rockProjectiles.add(new RockProjectile((int)this.player.getX(), (int)this.player.getY(), this.player.getNextProjectileDirection(), this.sheet, this.map, this.player.getLocationStatus()));
+        this.rockProjectiles.add(
+                new RockProjectile(
+                        (int)this.player.getX(),
+                        (int)this.player.getY(),
+                        this.player.getNextProjectileDirection(),
+                        this.sheet,
+                        this.map,
+                        this.player.getLocationStatus(),
+                        this
+                )
+        );
     }
 
     public GameWindow buildListeners(){
