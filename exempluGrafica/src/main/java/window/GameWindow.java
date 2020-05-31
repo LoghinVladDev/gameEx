@@ -1,15 +1,13 @@
 package window;
 
-import assets.AssetList;
 import assets.SpriteSheet;
-import assets.tile.Tile;
 import character.*;
 import item.Item;
-import item.Key;
 import listener.MovementListener;
 import map.Map;
 import player.Player;
-import projectile.ProjectileDirection;
+import projectile.ArrowProjectile;
+import projectile.Projectile;
 import projectile.RockProjectile;
 import sql.Connection;
 import window.ui.UI;
@@ -30,9 +28,19 @@ public class GameWindow extends JFrame {
 
     private int horizontalSpriteCount,verticalSpriteCount;
 
+    private String mapToLoad;
+
     private int score = 0;
 
     private UI ui;
+
+    private static GameWindow instance;
+
+    public static GameWindow getInstance(){
+        if(GameWindow.instance == null)
+            GameWindow.instance = new GameWindow(40,20);
+        return instance;
+    }
 
     private Map map;
     private Canvas drawingCanvas;//pe asta vom desena
@@ -49,7 +57,7 @@ public class GameWindow extends JFrame {
         return enemies;
     }
 
-    private List<RockProjectile> rockProjectiles;
+    private List<Projectile> projectiles;
 
     public static final int DEFAULT_FPS = 60;
 
@@ -57,7 +65,12 @@ public class GameWindow extends JFrame {
 
     private MovementListener movementListener;
 
-    public GameWindow(int horizontalSpriteCount,int verticalSpriteCount){
+    public GameWindow setMapToLoad(String mapToLoad) {
+        this.mapToLoad = mapToLoad;
+        return this;
+    }
+
+    private GameWindow(int horizontalSpriteCount, int verticalSpriteCount){
         this.horizontalSpriteCount=horizontalSpriteCount;
         this.verticalSpriteCount=verticalSpriteCount;
     }
@@ -71,6 +84,10 @@ public class GameWindow extends JFrame {
         this.setVisible(true);
         return this;
 
+    }
+
+    public Player getPlayer() {
+        return player;
     }
 
     public GameWindow setFps(int fps){
@@ -92,7 +109,8 @@ public class GameWindow extends JFrame {
 
         this.map.setKeyCount(5);
 
-        map.loadMap(Map.GAME_MAP_1);
+//        map.loadMap(Map.GAME_MAP_1);
+        map.loadMap(this.mapToLoad);
 
         this.player = map.getPlayer();
         this.player.setMovementListener(this.movementListener);
@@ -111,7 +129,7 @@ public class GameWindow extends JFrame {
         this.enemyAI.setMap(this.map);
         this.enemyAI.setEnemies(this.enemies);
 
-        this.rockProjectiles = new ArrayList<>();
+        this.projectiles = new ArrayList<>();
 
         return this;
     }
@@ -156,13 +174,14 @@ public class GameWindow extends JFrame {
         //Map map = new Map(this.horizontalSpriteCount, this.verticalSpriteCount, this.sheet);
         this.map.drawMap(graphics);
 
-        for(RockProjectile r : this.rockProjectiles)
+        for(Projectile r : this.projectiles)
             r.draw(graphics);
-        this.player.draw(graphics);
 
         for(Enemy e : this.enemies){
             e.draw(graphics);
         }
+        this.player.draw(graphics);
+
 
         Item.getGameWorldItems().forEach(e->e.draw(graphics));
 
@@ -173,7 +192,7 @@ public class GameWindow extends JFrame {
     }
 
     public void playerThrowsRock(){
-        this.rockProjectiles.add(
+        this.projectiles.add(
                 new RockProjectile(
                         (int)this.player.getX(),
                         (int)this.player.getY(),
@@ -181,6 +200,32 @@ public class GameWindow extends JFrame {
                         this.sheet,
                         this.map,
                         this.player.getLocationStatus(),
+                        this
+                )
+        );
+    }
+
+    public void enemyThrowsRock(int x, int y, double angle){
+        this.projectiles.add(
+                new RockProjectile(
+                    x,
+                    y,
+                    angle,
+                    this.sheet,
+                    this.map,
+                    this
+                )
+        );
+    }
+
+    public void enemyThrowsArrow(int x, int y, double angle){
+        this.projectiles.add(
+                new ArrowProjectile(
+                        x,
+                        y,
+                        angle,
+                        this.sheet,
+                        this.map,
                         this
                 )
         );
@@ -325,7 +370,7 @@ public class GameWindow extends JFrame {
     }
 
     public void update(){
-        System.out.println(this.player.getKeyCount() + ", " + this.map.getKeyCount());
+//        System.out.println(this.player.getKeyCount() + ", " + this.map.getKeyCount());
 
         if(this.player.getKeyCount() >= this.map.getKeyCount())
             this.waitBeforeExit();
@@ -336,7 +381,7 @@ public class GameWindow extends JFrame {
             this.waitBeforeExit();
         }
         this.enemyAI.update();
-        this.rockProjectiles.removeIf(r -> !r.update());
+        this.projectiles.removeIf(r -> !r.update());
 
         Item toBeRemoved = null;
 

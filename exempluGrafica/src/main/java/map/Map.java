@@ -5,10 +5,7 @@ import assets.SpriteSheet;
 import assets.tile.Castle;
 import assets.tile.Tile;
 import assets.tile.Tower;
-import character.ArcherEnemy;
-import character.Enemy;
-import character.RegularEnemy;
-import character.RockThrowerEnemy;
+import character.*;
 import player.Directions;
 import player.Player;
 import player.PlayerStatus;
@@ -40,6 +37,7 @@ public class Map {
     }
 
     public static final String GAME_MAP_1 = "/maps/Map1.txt";
+    public static final String GAME_TEST_MAP = "/maps/MapTest.txt";
 
     public int getWidth() {
         return width;
@@ -139,6 +137,8 @@ public class Map {
                         this.enemyList.add(new ArcherEnemy(j * SpriteSheet.SPRITE_WIDTH, i * SpriteSheet.SPRITE_HEIGHT, this.spriteSheet));
                     if(characterIndicator == 4)
                         this.enemyList.add(new RockThrowerEnemy(j * SpriteSheet.SPRITE_WIDTH, i * SpriteSheet.SPRITE_HEIGHT, this.spriteSheet));
+                    if(characterIndicator == 5)
+                        this.enemyList.add(new Spike(j * SpriteSheet.SPRITE_WIDTH, i * SpriteSheet.SPRITE_HEIGHT, this.spriteSheet));
                 }
             }
         }
@@ -171,6 +171,28 @@ public class Map {
 
             //if(c!=null)
                 //c.destroy();
+
+            if(this.mapLayout[y][x].getType().equals(AssetList.TOWER))
+                return true;
+            if (this.mapLayout[y][x].getType().equals(AssetList.CASTLE_GRASS_TILE))
+                return true;
+            if(this.mapLayout[y][x].getType().equals(AssetList.MOUNTAIN_TILE))
+                return true;
+            if(this.mapLayout[y][x].getType().equals(AssetList.TREE_TILE))
+                return true;
+        }
+        return false;
+    }
+
+
+    public boolean detectEnemyProjectileCollision(int x, int y){
+        if(x >= 0 && x < this.width && y >= 0 && y < this.height) {
+//            this.mapLayout[y][x].destroy();
+
+            //Castle c = (Castle)this.mapLayout[y][x];
+
+            //if(c!=null)
+            //c.destroy();
 
             if(this.mapLayout[y][x].getType().equals(AssetList.TOWER))
                 return true;

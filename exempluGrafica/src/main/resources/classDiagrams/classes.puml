@@ -22,12 +22,66 @@ class ArrowProjectile{
 
 }
 
-abstract class Projectile{
-    float speed : protected
+interface Projectile{
+
 }
 
-abstract class Enemy{
-    float movementSpeed : protected
+interface Enemy{
+    void draw(Graphics g)
+    void update()
+    void setPlayer(Player p)
+    void setMap(Map m)
+    void getHit()
+
+    boolean isDead()
+    boolean collides()
+
+    float getX()
+    float getY()
+}
+
+class Spike{
+
+}
+
+enum Directions{
+    LEFT,
+    LEFT_UP,
+    UP,
+    RIGHT_UP,
+    RIGHT,
+    RIGHT_DOWN,
+    DOWN,
+    LEFT_DOWN,
+    NOTHING
+}
+
+abstract class HumanoidEnemy{
+    BufferedImage enemySpriteRight : protected
+    BufferedImage enemySpriteLeft : protected
+
+    SpriteSheet sheet : protected
+
+    boolean dead : protected
+    boolean facingRight : protected
+    boolean isFollowingPlayer : protected
+
+    int dropChance : private
+    int frameTimeout : protected
+
+    float x : protected
+    float y : protected
+
+    Player player : protected
+    Directions playerCollisionDirection : private
+
+    Map map : protected
+
+    void dropHeart() : protected
+    void setFollowingPlayer(boolean toggle) : public
+
+    boolean isFollowingPlayer() : public
+    boolean collidesWithPlayer() : public
 }
 
 class RegularEnemy{
@@ -39,18 +93,39 @@ class ArcherEnemy{
 }
 
 class RockThrowerEnemy{
+    int patrolHorizStartingPoint : private
+    int patrolHorizOffsetLimit : private
+    int patrolSpeed : private
+    int hitCapacity : private
+    int takesDamageOnRock : private
+    int timeout : private
+    int timeNearPlayer : private
 
+    float moveSpeed : private
+
+    Directions movementDirection : private
+
+    void followPlayer() : private
+
+    double getRecoilAngle(double degrees) : private
+    void patrol() : private
 }
 
 Projectile ^-- ArrowProjectile
 Projectile ^-- RockProjectile
 
-Enemy ^-- RegularEnemy
-Enemy ^-- ArcherEnemy
-Enemy ^-- RockThrowerEnemy
+HumanoidEnemy ^-- RegularEnemy
+HumanoidEnemy ^-- ArcherEnemy
+HumanoidEnemy ^-- RockThrowerEnemy
+
+Enemy ^-- Spike
+Enemy ^-- HumanoidEnemy
 
 GameWindow "1" o-- "1" Player
 GameWindow "1" o-- "1.." Enemy
+
+Directions . RockThrowerEnemy
+Directions . HumanoidEnemy
 
 Player "1" *-- "1.." RockProjectile
 ArcherEnemy "1" *-- "1.." ArrowProjectile

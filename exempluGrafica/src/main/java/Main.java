@@ -1,4 +1,5 @@
 import listener.MovementListener;
+import map.Map;
 import window.GameWindow;
 
 import java.awt.event.KeyEvent;
@@ -15,7 +16,8 @@ public class Main {
 
     public static void startApp(){
 
-        GameWindow gameWindow=new GameWindow(40,20)
+        GameWindow gameWindow=GameWindow.getInstance()
+                .setMapToLoad(Map.GAME_MAP_1)
                 .buildWindow()
                 .buildComponents()
                 .buildLayout()

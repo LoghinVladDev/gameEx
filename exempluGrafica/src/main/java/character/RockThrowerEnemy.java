@@ -4,10 +4,11 @@ import assets.AssetList;
 import assets.SpriteSheet;
 import player.Directions;
 import player.PlayerStatus;
+import window.GameWindow;
 
 import java.util.List;
 
-public class RockThrowerEnemy extends Enemy {
+public class RockThrowerEnemy extends HumanoidEnemy {
 
     private int patrolHorizStartingPoint = 0;
     private int patrolHorizOffsetLimit = 48;
@@ -18,8 +19,11 @@ public class RockThrowerEnemy extends Enemy {
 
     private int takesDamageOnRock = 50;
 
+    private static final double RECOIL_ANGLE = 30;
+
     private int timeout = 0;
 
+    private static final int THROW_ROCK_TIMEOUT = 60;
     private static final int GET_HIT_TIMEOUT = 30; // in numar de cadre, 30 = 0.5s
     private static final int HIT_PLAYER_TIME = 90;
 
@@ -172,8 +176,51 @@ public class RockThrowerEnemy extends Enemy {
         }
         else {
 //            System.out.println("ARUNC CHIATRA IN PLAYER");
+            double slope = height/width;
+//            System.out.println(height + ", " + width);
+            double angle = Math.atan(slope);
+
+            int quadrant = 0;
+
+            if (height >= 0 && width >= 0)
+                quadrant = 1;
+            if (height >= 0 && width < 0)
+                quadrant = 2;
+            if (height < 0 && width < 0)
+                quadrant = 3;
+            if (height < 0 && width >= 0)
+                quadrant = 4;
+
+            double degreeAngle = Math.toDegrees(angle);
+
+            switch (quadrant){
+                case 1 : degreeAngle = degreeAngle; break;
+                case 2 : degreeAngle = 90 + (90 + degreeAngle); break;
+                case 3 : degreeAngle = degreeAngle + 180; break;
+                case 4 : degreeAngle = 270 + (90 + degreeAngle); break;
+            }
+
+            System.out.println(degreeAngle);
+
+            degreeAngle = this.getRecoilAngle(degreeAngle);
+
+            GameWindow.getInstance().enemyThrowsRock((int)this.x, (int)this.y, degreeAngle);
+
+            this.timeout = THROW_ROCK_TIMEOUT;
+
+        }
+    }
+
+    private double getRecoilAngle(double degreeAngle){
+        double res = degreeAngle + (Math.random() * RECOIL_ANGLE - RECOIL_ANGLE/2);
+
+        if(res < 0){
+            res = 360 + res;
+        } else if(res >= 360){
+            res = res - 360;
         }
 
+        return res;
     }
 
 //    private

@@ -1,6 +1,8 @@
 package assets;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,6 +27,20 @@ public class SpriteSheet {
     public BufferedImage getSpriteImage() {
         return spriteImage;
     }
+
+    public static BufferedImage rotate(BufferedImage bimg, double angle) {
+
+        int w = bimg.getWidth();
+        int h = bimg.getHeight();
+
+        BufferedImage rotated = new BufferedImage(w, h, bimg.getType());
+        Graphics2D graphic = rotated.createGraphics();
+        graphic.rotate(Math.toRadians(360 - angle), w/2, h/2);
+        graphic.drawImage(bimg, null, 0, 0);
+        graphic.dispose();
+        return rotated;
+    }
+
 
     /**
      * Returns BufferedImage for selected asset type
@@ -60,7 +76,17 @@ public class SpriteSheet {
             case ENEMY_ARCHER_RIGHT:        return this.crop(6,4);
             case ENEMY_ROCK_THROWER_LEFT:   return this.crop(3, 4);
             case ENEMY_ROCK_THROWER_RIGHT:  return this.crop(4,4);
-            default:                        return this.crop(7, 4);
+            case ARROW_BOTTOM:              return this.crop(7 ,1);
+            case ARROW_BOTTOM_LEFT:         return this.crop(7, 0);
+            case ARROW_LEFT:                return this.crop(5, 2);
+            case ARROW_TOP_LEFT:            return this.crop(7, 4);
+            case ARROW_TOP:                 return this.crop(5, 1);
+            case ARROW_TOP_RIGHT:           return this.crop(6, 1);
+            case ARROW_RIGHT:               return this.crop(7, 2);
+            case ARROW_BOTTOM_RIGHT:        return this.crop(7, 3);
+            case SPIKE_HIDDEN:              return this.crop(7, 0);
+            case SPIKE_SHOWN:               return this.crop(6, 0);
+            default:                        return this.crop(6, 3);
         }
     }
 
@@ -93,6 +119,16 @@ public class SpriteSheet {
             case 24: return AssetList.ENEMY_ARCHER_RIGHT;
             case 25: return AssetList.ENEMY_ROCK_THROWER_LEFT;
             case 26: return AssetList.ENEMY_ROCK_THROWER_RIGHT;
+            case 27: return AssetList.ARROW_TOP;
+            case 28: return AssetList.ARROW_BOTTOM;
+            case 29: return AssetList.ARROW_LEFT;
+            case 30: return AssetList.ARROW_RIGHT;
+            case 31: return AssetList.ARROW_TOP_LEFT;
+            case 32: return AssetList.ARROW_TOP_RIGHT;
+            case 33: return AssetList.ARROW_BOTTOM_LEFT;
+            case 34: return AssetList.ARROW_BOTTOM_RIGHT;
+            case 35: return AssetList.SPIKE_HIDDEN;
+            case 36: return AssetList.SPIKE_SHOWN;
             default: return AssetList.UNKNOWN_ASSET;
         }
     }

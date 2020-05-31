@@ -5,17 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 import assets.AssetList;
 import assets.SpriteSheet;
-import character.Enemy;
-import character.RegularEnemy;
-import character.RockThrowerEnemy;
+import character.*;
 import listener.MovementListener;
 import map.Map;
 import projectile.ProjectileDirection;
 
-import javax.print.attribute.standard.PDLOverrideSupported;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.nio.Buffer;
 
 public class Player {
     boolean combinedMovement = false;
@@ -23,6 +19,7 @@ public class Player {
     private int keyCount = 0;
     private static final int REGULAR_ENEMY_DETECTION_CIRCLE_RADIUS = 300;
     private static final int ROCK_THROWER_ENEMY_DETECTION_CIRCLE_RADIUS = 600;
+    private static final int ARCHER_ENEMY_DETECTION_CIRCLE_RADIUS = 1000;
 
     private BufferedImage playerSpriteLeft;
     private BufferedImage playerSpriteRight;
@@ -49,9 +46,9 @@ public class Player {
 
     private ProjectileDirection projectileDirection = ProjectileDirection.RIGHT;
 
-    private List<Enemy> surroundingEnemies;
+    private List<HumanoidEnemy> surroundingEnemies;
 
-    public List<Enemy> getSurroundingEnemies() {
+    public List<HumanoidEnemy> getSurroundingEnemies() {
         return surroundingEnemies;
     }
 
@@ -190,7 +187,7 @@ public class Player {
         if(status.contains(PlayerStatus.PLAYER_COLLIDE_TOP) || status.contains(PlayerStatus.PLAYER_COLLIDE_BOTTOM))
             this.y = oldY;
 
-        for(Enemy e : this.surroundingEnemies){
+        for(HumanoidEnemy e : this.surroundingEnemies){
             if(!e.isDead())
                 if(!e.getPlayerCollisionDirection().equals(Directions.NOTHING)){
                     Directions relativePlayerPosition = e.getPlayerCollisionDirection();
@@ -221,13 +218,19 @@ public class Player {
                 ROCK_THROWER_ENEMY_DETECTION_CIRCLE_RADIUS,
                 ROCK_THROWER_ENEMY_DETECTION_CIRCLE_RADIUS
         );
+        Ellipse2D archerDetectionCircle = new Ellipse2D.Float(
+                this.x - (float) ARCHER_ENEMY_DETECTION_CIRCLE_RADIUS / 2,
+                this.y- (float)ARCHER_ENEMY_DETECTION_CIRCLE_RADIUS / 2,
+                ARCHER_ENEMY_DETECTION_CIRCLE_RADIUS,
+                ARCHER_ENEMY_DETECTION_CIRCLE_RADIUS
+        );
 
         for(Enemy e : this.enemies){
 
             try{
                 RegularEnemy castedRegularEnemy = (RegularEnemy)e;
 
-                if(regularEnemyDetectionCircle.contains(castedRegularEnemy.getX(), e.getY()))
+                if(regularEnemyDetectionCircle.contains(castedRegularEnemy.getX(), castedRegularEnemy.getY()))
                     if(!castedRegularEnemy.isFollowingPlayer())
                         castedRegularEnemy.setFollowingPlayer(true);
 
@@ -235,11 +238,19 @@ public class Player {
                 try{
                     RockThrowerEnemy castedRockThrowerEnemy = (RockThrowerEnemy) e;
 
-                    if(rockThrowerEnemyDetectionCircle.contains(castedRockThrowerEnemy.getX(), e.getY()))
+                    if(rockThrowerEnemyDetectionCircle.contains(castedRockThrowerEnemy.getX(), castedRockThrowerEnemy.getY()))
                         if(!castedRockThrowerEnemy.isFollowingPlayer())
                             castedRockThrowerEnemy.setFollowingPlayer(true);
                 } catch ( ClassCastException ignored1 ){
+                    try{
+                        ArcherEnemy castedArcher = (ArcherEnemy) e;
 
+                        if(archerDetectionCircle.contains(castedArcher.getX(), castedArcher.getY()))
+                            if(!castedArcher.isFollowingPlayer())
+                                castedArcher.setFollowingPlayer(true);
+                    } catch ( ClassCastException ignored2 ){
+
+                    }
                 }
             }
 

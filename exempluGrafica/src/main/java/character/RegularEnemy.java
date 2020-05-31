@@ -7,7 +7,7 @@ import player.PlayerStatus;
 
 import java.util.List;
 
-public class RegularEnemy extends Enemy {
+public class RegularEnemy extends HumanoidEnemy {
 
     private int patrolHorizStartingPoint = 0;
     private int patrolHorizOffsetLimit = 48;
