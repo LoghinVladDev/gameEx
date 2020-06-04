@@ -2,15 +2,12 @@ package assets;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.Buffer;
 
 public class SpriteSheet {
     private BufferedImage spriteImage;
-    private static final int DECAL_SPRITE_WIDTH = 48 , DECAL_SPRITE_HEIGH = 48;
+    private static final int DECAL_SPRITE_WIDTH = 48 , DECAL_SPRITE_HEIGHT = 48;
     public static final int SPRITE_WIDTH=36,SPRITE_HEIGHT=36;//constante si nu pot fi  modificate
     public SpriteSheet(String bufferedImageLocation)  {
         try {
@@ -134,6 +131,6 @@ public class SpriteSheet {
     }
 
     public BufferedImage crop(int x, int y){
-        return this.spriteImage.getSubimage(x * DECAL_SPRITE_WIDTH, y * DECAL_SPRITE_HEIGH, DECAL_SPRITE_WIDTH, DECAL_SPRITE_HEIGH);
+        return this.spriteImage.getSubimage(x * DECAL_SPRITE_WIDTH, y * DECAL_SPRITE_HEIGHT, DECAL_SPRITE_WIDTH, DECAL_SPRITE_HEIGHT);
     }
 }

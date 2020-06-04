@@ -17,7 +17,7 @@ public class Main {
     public static void startApp(){
 
         GameWindow gameWindow=GameWindow.getInstance()
-                .setMapToLoad(Map.GAME_MAP_1)
+                .setMapToLoad(Map.GAME_TEST_MAP)
                 .buildWindow()
                 .buildComponents()
                 .buildLayout()

@@ -10,6 +10,8 @@ import java.util.List;
 
 public class RockThrowerEnemy extends HumanoidEnemy {
 
+    private static final int DEFAULT_ROCK_THROW_DISTANCE = 250;
+
     private int patrolHorizStartingPoint = 0;
     private int patrolHorizOffsetLimit = 48;
 
@@ -120,7 +122,7 @@ public class RockThrowerEnemy extends HumanoidEnemy {
 
 //        System.out.println(distance);
 
-        if(distance > 300) {
+        if(distance > DEFAULT_ROCK_THROW_DISTANCE) {
             boolean firstHalf = false;
 
             int quadrant = 0;
