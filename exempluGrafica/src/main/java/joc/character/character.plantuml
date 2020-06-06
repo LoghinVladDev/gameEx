@@ -1,0 +1,210 @@
+@startuml
+
+title __CHARACTER's Class Diagram__\n
+
+  namespace joc {
+    namespace character {
+      class joc.character.ArcherEnemy {
+          {static} - GET_HIT_TIMEOUT : int
+          {static} - HIT_PLAYER_TIME : int
+          {static} - RECOIL_ANGLE : double
+          {static} - THROW_ARROW_TIMEOUT : int
+          - hitCapacity : int
+          - moveSpeed : float
+          - patrolHorizOffsetLimit : int
+          - patrolHorizStartingPoint : int
+          - patrolSpeed : int
+          - takesDamageOnRock : int
+          - timeNearPlayer : int
+          - timeout : int
+          + ArcherEnemy()
+          + getHit()
+          + update()
+          - followPlayer()
+          - getRecoilAngle()
+          - patrol()
+      }
+    }
+  }
+  
+
+  namespace joc {
+    namespace character {
+      interface joc.character.Enemy {
+          + collides()
+          {abstract} + draw()
+          {abstract} + getHit()
+          {abstract} + getX()
+          {abstract} + getY()
+          {abstract} + isDead()
+          {abstract} + setMap()
+          {abstract} + setPlayer()
+          {abstract} + update()
+      }
+    }
+  }
+  
+
+  namespace joc {
+    namespace character {
+      class joc.character.EnemyAI {
+          - deadEnemies : List<Enemy>
+          - enemies : List<Enemy>
+          {static} - instance : EnemyAI
+          + getDeadEnemies()
+          {static} + getInstance()
+          + isInitialised()
+          + setEnemies()
+          + setMap()
+          + setPlayer()
+          + update()
+          - EnemyAI()
+      }
+    }
+  }
+  
+
+  namespace joc {
+    namespace character {
+      abstract class joc.character.HumanoidEnemy {
+          {static} + HIGH_DROP_CHANCE : int
+          {static} + LOW_DROP_CHANCE : int
+          {static} + MEDIUM_DROP_CHANCE : int
+          # dead : boolean
+          # enemySpriteLeft : BufferedImage
+          # enemySpriteRight : BufferedImage
+          # facingRight : boolean
+          # frameTimeout : int
+          # isFollowingPlayer : boolean
+          # x : float
+          # y : float
+          - dropChance : int
+          + collidesWithPlayer()
+          + draw()
+          {abstract} + getHit()
+          + getPlayerCollisionDirection()
+          + getX()
+          + getY()
+          + isDead()
+          + isFollowingPlayer()
+          + setFollowingPlayer()
+          + setMap()
+          + setPlayer()
+          + swapDirection()
+          {abstract} + update()
+          # HumanoidEnemy()
+          # dropHeart()
+      }
+    }
+  }
+  
+
+  namespace joc {
+    namespace character {
+      class joc.character.RegularEnemy {
+          {static} - GET_HIT_TIMEOUT : int
+          {static} - HIT_PLAYER_TIME : int
+          - hitCapacity : int
+          - moveSpeed : float
+          - patrolHorizOffsetLimit : int
+          - patrolHorizStartingPoint : int
+          - patrolSpeed : int
+          - takesDamageOnRock : int
+          - timeNearPlayer : int
+          - timeout : int
+          + RegularEnemy()
+          + getHit()
+          + update()
+          - followPlayer()
+          - patrol()
+      }
+    }
+  }
+  
+
+  namespace joc {
+    namespace character {
+      class joc.character.RockThrowerEnemy {
+          {static} - DEFAULT_ROCK_THROW_DISTANCE : int
+          {static} - GET_HIT_TIMEOUT : int
+          {static} - HIT_PLAYER_TIME : int
+          {static} - RECOIL_ANGLE : double
+          {static} - THROW_ROCK_TIMEOUT : int
+          - hitCapacity : int
+          - moveSpeed : float
+          - patrolHorizOffsetLimit : int
+          - patrolHorizStartingPoint : int
+          - patrolSpeed : int
+          - takesDamageOnRock : int
+          - timeNearPlayer : int
+          - timeout : int
+          + RockThrowerEnemy()
+          + getHit()
+          + update()
+          - followPlayer()
+          - getRecoilAngle()
+          - patrol()
+      }
+    }
+  }
+  
+
+  namespace joc {
+    namespace character {
+      class joc.character.Spike {
+          {static} - FRAME_COUNT_HIT_PLAYER : int
+          {static} - FRAME_COUNT_ON_SURFACE : int
+          {static} - FRAME_COUNT_SHOW : int
+          - active : boolean
+          - hitPlayerTimer : int
+          - onSurfaceTimer : int
+          - showTimer : int
+          - shown : boolean
+          - sprite : BufferedImage
+          - spriteHidden : BufferedImage
+          - spriteShown : BufferedImage
+          - x : float
+          - y : float
+          + Spike()
+          + collides()
+          + draw()
+          + getHit()
+          + getX()
+          + getY()
+          + isDead()
+          + setMap()
+          + setPlayer()
+          + update()
+          - isPlayerOver()
+      }
+    }
+  }
+  
+
+  joc.character.ArcherEnemy -up-|> joc.character.HumanoidEnemy
+  joc.character.ArcherEnemy o-- joc.player.Directions : movementDirection
+  joc.character.EnemyAI o-- joc.map.Map : map
+  joc.character.EnemyAI o-- joc.player.Player : player
+  joc.character.HumanoidEnemy .up.|> joc.character.Enemy
+  joc.character.HumanoidEnemy o-- joc.map.Map : map
+  joc.character.HumanoidEnemy o-- joc.player.Player : player
+  joc.character.HumanoidEnemy o-- joc.assets.SpriteSheet : sheet
+  joc.character.HumanoidEnemy o-- joc.player.Directions : playerCollisionDirection
+  joc.character.RegularEnemy -up-|> joc.character.HumanoidEnemy
+  joc.character.RegularEnemy o-- joc.player.Directions : movementDirection
+  joc.character.RockThrowerEnemy -up-|> joc.character.HumanoidEnemy
+  joc.character.RockThrowerEnemy o-- joc.player.Directions : movementDirection
+  joc.character.Spike .up.|> joc.character.Enemy
+  joc.character.Spike o-- joc.map.Map : map
+  joc.character.Spike o-- joc.player.Player : player
+  joc.character.Spike o-- joc.assets.SpriteSheet : sheet
+
+
+right footer
+
+
+PlantUML diagram generated by SketchIt! (https://bitbucket.org/pmesmeur/sketch.it)
+For more information about this tool, please contact philippe.mesmeur@gmail.com
+endfooter
+
+@enduml

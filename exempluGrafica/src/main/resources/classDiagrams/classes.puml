@@ -72,10 +72,10 @@ abstract class HumanoidEnemy{
     float x : protected
     float y : protected
 
-    Player player : protected
+    Player joc.player : protected
     Directions playerCollisionDirection : private
 
-    Map map : protected
+    Map joc.map : protected
 
     void dropHeart() : protected
     void setFollowingPlayer(boolean toggle) : public

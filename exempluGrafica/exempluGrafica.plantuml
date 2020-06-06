@@ -1,0 +1,307 @@
+@startuml
+
+title __EXEMPLUGRAFICA's Class Diagram__\n
+
+  namespace joc {
+    class joc.Main {
+    }
+  }
+  
+
+  namespace joc {
+    class joc.TestSQLite {
+    }
+  }
+  
+
+  namespace joc {
+    namespace assets {
+      enum AssetList {
+      }
+    }
+  }
+  
+
+  namespace joc {
+    namespace assets {
+      class joc.assets.SpriteSheet {
+      }
+    }
+  }
+  
+
+  namespace joc {
+    namespace assets {
+      namespace tile {
+        class joc.assets.tile.Castle {
+        }
+      }
+    }
+  }
+  
+
+  namespace joc {
+    namespace assets {
+      namespace tile {
+        class joc.assets.tile.Tile {
+        }
+      }
+    }
+  }
+  
+
+  namespace joc {
+    namespace assets {
+      namespace tile {
+        class joc.assets.tile.Tower {
+        }
+      }
+    }
+  }
+  
+
+  namespace joc {
+    namespace character {
+      class joc.character.ArcherEnemy {
+      }
+    }
+  }
+  
+
+  namespace joc {
+    namespace character {
+      interface joc.character.Enemy {
+      }
+    }
+  }
+  
+
+  namespace joc {
+    namespace character {
+      class joc.character.EnemyAI {
+      }
+    }
+  }
+  
+
+  namespace joc {
+    namespace character {
+      abstract class joc.character.HumanoidEnemy {
+      }
+    }
+  }
+  
+
+  namespace joc {
+    namespace character {
+      class joc.character.RegularEnemy {
+      }
+    }
+  }
+  
+
+  namespace joc {
+    namespace character {
+      class joc.character.RockThrowerEnemy {
+      }
+    }
+  }
+  
+
+  namespace joc {
+    namespace character {
+      class joc.character.Spike {
+      }
+    }
+  }
+  
+
+  namespace joc {
+    namespace item {
+      class joc.item.Heart {
+      }
+    }
+  }
+  
+
+  namespace joc {
+    namespace item {
+      abstract class joc.item.Item {
+      }
+    }
+  }
+  
+
+  namespace joc {
+    namespace item {
+      class joc.item.Key {
+      }
+    }
+  }
+  
+
+  namespace joc {
+    namespace listener {
+      class joc.listener.CombatListener {
+      }
+    }
+  }
+  
+
+  namespace joc {
+    namespace listener {
+      class joc.listener.MovementListener {
+      }
+    }
+  }
+  
+
+  namespace joc {
+    namespace map {
+      class joc.map.Map {
+      }
+    }
+  }
+  
+
+  namespace joc {
+    namespace player {
+      enum Directions {
+      }
+    }
+  }
+  
+
+  namespace joc {
+    namespace player {
+      class joc.player.Player {
+      }
+    }
+  }
+  
+
+  namespace joc {
+    namespace player {
+      enum PlayerStatus {
+      }
+    }
+  }
+  
+
+  namespace joc {
+    namespace projectile {
+      class joc.projectile.ArrowProjectile {
+      }
+    }
+  }
+  
+
+  namespace joc {
+    namespace projectile {
+      interface joc.projectile.Projectile {
+      }
+    }
+  }
+  
+
+  namespace joc {
+    namespace projectile {
+      enum ProjectileDirection {
+      }
+    }
+  }
+  
+
+  namespace joc {
+    namespace projectile {
+      class joc.projectile.RockProjectile {
+      }
+    }
+  }
+  
+
+  namespace joc {
+    namespace sql {
+      class joc.sql.Connection {
+      }
+    }
+  }
+  
+
+  namespace joc {
+    namespace window {
+      class joc.window.GameWindow {
+      }
+    }
+  }
+  
+
+  namespace joc {
+    namespace window {
+      namespace ui {
+        class joc.window.ui.UI {
+        }
+      }
+    }
+  }
+  
+
+  joc.assets.tile.Castle -up-|> joc.assets.tile.Tile
+  joc.assets.tile.Castle o-- joc.player.Player : player
+  joc.assets.tile.Tile o-- joc.assets.SpriteSheet : sheet
+  joc.assets.tile.Tile o-- joc.assets.AssetList : type
+  joc.assets.tile.Tower -up-|> joc.assets.tile.Tile
+  joc.character.ArcherEnemy -up-|> joc.character.HumanoidEnemy
+  joc.character.ArcherEnemy o-- joc.player.Directions : movementDirection
+  joc.character.EnemyAI o-- joc.map.Map : map
+  joc.character.EnemyAI o-- joc.player.Player : player
+  joc.character.HumanoidEnemy .up.|> joc.character.Enemy
+  joc.character.HumanoidEnemy o-- joc.map.Map : map
+  joc.character.HumanoidEnemy o-- joc.player.Player : player
+  joc.character.HumanoidEnemy o-- joc.assets.SpriteSheet : sheet
+  joc.character.HumanoidEnemy o-- joc.player.Directions : playerCollisionDirection
+  joc.character.RegularEnemy -up-|> joc.character.HumanoidEnemy
+  joc.character.RegularEnemy o-- joc.player.Directions : movementDirection
+  joc.character.RockThrowerEnemy -up-|> joc.character.HumanoidEnemy
+  joc.character.RockThrowerEnemy o-- joc.player.Directions : movementDirection
+  joc.character.Spike .up.|> joc.character.Enemy
+  joc.character.Spike o-- joc.map.Map : map
+  joc.character.Spike o-- joc.player.Player : player
+  joc.character.Spike o-- joc.assets.SpriteSheet : sheet
+  joc.item.Heart -up-|> joc.item.Item
+  joc.item.Item o-- joc.player.Player : player
+  joc.item.Item o-- joc.assets.SpriteSheet : sheet
+  joc.item.Key -up-|> joc.item.Item
+  joc.listener.CombatListener .up.|> java.awt.event.KeyListener
+  joc.listener.MovementListener .up.|> java.awt.event.KeyListener
+  joc.map.Map o-- joc.player.Player : player
+  joc.map.Map o-- joc.assets.SpriteSheet : spriteSheet
+  joc.player.Player o-- joc.player.PlayerStatus : locationStatus
+  joc.player.Player o-- joc.listener.MovementListener : movementListener
+  joc.player.Player o-- joc.projectile.ProjectileDirection : projectileDirection
+  joc.projectile.ArrowProjectile .up.|> joc.projectile.Projectile
+  joc.projectile.ArrowProjectile o-- joc.window.GameWindow : gameWindow
+  joc.projectile.ArrowProjectile o-- joc.map.Map : map
+  joc.projectile.RockProjectile .up.|> joc.projectile.Projectile
+  joc.projectile.RockProjectile o-- joc.window.GameWindow : gameWindow
+  joc.projectile.RockProjectile o-- joc.map.Map : map
+  joc.projectile.RockProjectile o-- joc.projectile.ProjectileDirection : projectileDirection
+  joc.window.GameWindow -up-|> javax.swing.JFrame
+  joc.window.GameWindow o-- joc.character.EnemyAI : enemyAI
+  joc.window.GameWindow o-- joc.map.Map : map
+  joc.window.GameWindow o-- joc.listener.MovementListener : movementListener
+  joc.window.GameWindow o-- joc.player.Player : player
+  joc.window.GameWindow o-- joc.assets.SpriteSheet : sheet
+  joc.window.GameWindow o-- joc.window.ui.UI : ui
+  joc.window.ui.UI o-- joc.player.Player : player
+  joc.window.ui.UI o-- joc.window.GameWindow : window
+
+
+right footer
+
+
+PlantUML diagram generated by SketchIt! (https://bitbucket.org/pmesmeur/sketch.it)
+For more information about this tool, please contact philippe.mesmeur@gmail.com
+endfooter
+
+@enduml
