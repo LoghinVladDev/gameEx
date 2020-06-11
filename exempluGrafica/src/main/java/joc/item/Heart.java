@@ -14,6 +14,9 @@ public class Heart extends Item {
         super.sprite = sheet.getAsset(AssetList.HEART_ICON);
     }
 
+    /**
+     * verif daca player-ul a luat item-ul
+     */
     private void checkPlayerCollision(){
         Rectangle playerMesh = new Rectangle(
                 (int)this.player.getX(),

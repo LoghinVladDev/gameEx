@@ -36,6 +36,11 @@ public class Castle extends Tile {
         );
     }
 
+    /**
+     * adaugare de cheie la distrugere. Aici face mai multe.
+     * @param player
+     */
+    @Override
     public void addOnDropKey(Player player){
         this.willDropKey = true;
         this.player = player;
@@ -45,10 +50,11 @@ public class Castle extends Tile {
 
 
     /**
-     * Called when rock hits castle
+     * Called when rock hits castle. Aici face mai multe
+     * Calculeaza daca piatra care a intrat in tile trebuie sa distruga tile-ul sau nu
      */
+    @Override
     public void destroy() {
-//        System.out.println("BOLOVAN PESTE CASTEL LA x = " + this.x + ", y = " + this.y);
         if(this.type.equals(AssetList.DAMAGED_CASTLE_GRASS_TILE))
             return;
 

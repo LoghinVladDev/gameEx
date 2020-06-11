@@ -33,6 +33,12 @@ public class RockProjectile implements Projectile {
 
     private int stayTime = 0;
 
+    /**
+     * ne da imaginea pentru orientarea aleasa
+     * @param projectileDirection
+     * @param sheet
+     * @return
+     */
     private BufferedImage loadProjectileForDirection(ProjectileDirection projectileDirection, SpriteSheet sheet){
         switch (projectileDirection){
             case UP: return sheet.getAsset(AssetList.ROCK_UP);
@@ -47,6 +53,12 @@ public class RockProjectile implements Projectile {
         }
     }
 
+    /**
+     * ne da imaginea pe un unghi setat
+     * @param ang
+     * @param sheet
+     * @return
+     */
     private BufferedImage loadProjectileForAngle(double ang, SpriteSheet sheet){
         if(ang <= 67.5 && ang > 22.5)
             return sheet.getAsset(AssetList.ROCK_TOPRIGHT);
@@ -66,6 +78,15 @@ public class RockProjectile implements Projectile {
             return sheet.getAsset(AssetList.ROCK_RIGHT);
     }
 
+    /**
+     * ctor proj inamic
+     * @param x
+     * @param y
+     * @param angle
+     * @param sheet
+     * @param map
+     * @param gameWindow
+     */
     public RockProjectile(int x, int y, double angle, SpriteSheet sheet, Map map, GameWindow gameWindow){
         this.gameWindow = gameWindow;
         this.spriteImage = this.loadProjectileForAngle(angle, sheet);
@@ -79,6 +100,16 @@ public class RockProjectile implements Projectile {
         this.isPlayerThrown = false;
     }
 
+    /**
+     * ctor proj player
+     * @param x
+     * @param y
+     * @param projectileDirection
+     * @param sheet
+     * @param map
+     * @param status
+     * @param gameWindow
+     */
     public RockProjectile(int x, int y, ProjectileDirection projectileDirection, SpriteSheet sheet, Map map, PlayerStatus status, GameWindow gameWindow){
         this.gameWindow = gameWindow;
         this.spriteImage = this.loadProjectileForDirection(projectileDirection, sheet);
@@ -95,6 +126,13 @@ public class RockProjectile implements Projectile {
         this.isPlayerThrown = true;
     }
 
+    /**
+     * ne spune daca a intrat in inamic
+     * @param x1 stg inamic
+     * @param y1 sus inamic
+     * @param x2 drp inamic
+     * @param y2 jos inamic
+     */
     private void detectEnemyCollision(int x1, int y1, int x2, int y2){
         Rectangle r = new Rectangle(x1, y1, x2 - x1, y2 - y1);
         for(Enemy e : this.gameWindow.getEnemies()){
@@ -117,6 +155,10 @@ public class RockProjectile implements Projectile {
         }
     }
 
+    /**
+     * verif cine a aruncat proj pt ca au behaviour diferit
+     * @return true daca a intrat in ceva, false otherwise
+     */
     public boolean update(){
         if(this.isPlayerThrown)
             return this.updatePlayer();
@@ -125,6 +167,12 @@ public class RockProjectile implements Projectile {
         }
     }
 
+    /**
+     * update pt proj inamice
+     * calcula viteza cu fortele compuse
+     *
+     * @return
+     */
     public boolean updateEnemyProjectile() {
         if (this.speed <= 0)
             return false;
@@ -162,6 +210,9 @@ public class RockProjectile implements Projectile {
         return true;
     }
 
+    /**
+     * daca intra in jucator
+     */
     private void detectPlayerCollision(){
         Rectangle rockMesh = new Rectangle(
                 (int) this.x + 15,
@@ -183,6 +234,9 @@ public class RockProjectile implements Projectile {
         }
     }
 
+    /**
+     * incetinea piatra cu timpul
+     */
     private void slowDown(){
         if(isPlayerThrown) {
             this.framesPassed++;
@@ -209,6 +263,10 @@ public class RockProjectile implements Projectile {
 
     }
 
+    /**
+     * update proj jucator
+     * @return
+     */
     public boolean updatePlayer(){
         if(this.speed <= 0)
             return false;

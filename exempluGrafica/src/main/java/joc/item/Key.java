@@ -14,6 +14,9 @@ public class Key extends Item {
 //        System.out.println("se spawneaza o cheie dar nu prea , x = " + xPos + ", y = " + yPos );
     }
 
+    /**
+     * verif daca player-ul a luat item-ul
+     */
     private void checkPlayerCollision(){
         Rectangle playerMesh = new Rectangle(
                 (int)this.player.getX(),

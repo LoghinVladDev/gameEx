@@ -7,6 +7,9 @@ import joc.player.PlayerStatus;
 
 import java.util.List;
 
+/**
+ * inamici melee
+ */
 public class RegularEnemy extends HumanoidEnemy {
 
     private int patrolHorizStartingPoint = 0;
@@ -27,6 +30,12 @@ public class RegularEnemy extends HumanoidEnemy {
 
     private float moveSpeed = 2;
 
+    /**
+     * ctor
+     * @param x
+     * @param y
+     * @param sheet
+     */
     public RegularEnemy(int x, int y, SpriteSheet sheet){
         super(x,y);
         super.sheet = sheet;
@@ -163,6 +172,9 @@ public class RegularEnemy extends HumanoidEnemy {
 
 //    private
 
+    /**
+     * patrulare
+     */
     private void patrol(){
 
 //        this.checkForPlayer();

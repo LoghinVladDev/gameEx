@@ -8,6 +8,10 @@ import joc.window.GameWindow;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+/**
+ * sageata poate fi aruncata doar de inamic
+ * same thing as RockProjectile, e doar mai incet
+ */
 public class ArrowProjectile implements Projectile {
     public static final int DEFAULT_ENEMY_PROJECTILE_SPEED = 23;
 
@@ -29,6 +33,15 @@ public class ArrowProjectile implements Projectile {
 
     private int stayTime = 0;
 
+    /**
+     * ctor proj inamic
+     * @param x
+     * @param y
+     * @param angle
+     * @param sheet
+     * @param map
+     * @param gameWindow
+     */
     public ArrowProjectile(int x, int y, double angle, SpriteSheet sheet, Map map, GameWindow gameWindow){
         this.gameWindow = gameWindow;
         //this.spriteImage = this.loadProjectileForAngle(angle, sheet);

@@ -30,6 +30,13 @@ public class ArcherEnemy extends HumanoidEnemy {
     private int timeNearPlayer = 0;
 
     private float moveSpeed = 1.5f;
+
+    /**
+     * Ctor
+     * @param x
+     * @param y
+     * @param sheet
+     */
     public ArcherEnemy(int x, int y, SpriteSheet sheet){
         super(x,y);
         super.sheet = sheet;
@@ -114,6 +121,10 @@ public class ArcherEnemy extends HumanoidEnemy {
         }
     }
 
+    /**
+     * fuge dupa jucator. bazat pe cadrane ale cerc. trigo
+     * daca e in range de tragere, trage cu sageata
+     */
     private void followPlayer(){
         float height = this.y - this.player.getY();
         float width = this.player.getX() - this.x;
@@ -177,7 +188,6 @@ public class ArcherEnemy extends HumanoidEnemy {
             }
         }
         else {
-//            System.out.println("ARUNC CHIATRA IN PLAYER");
             double slope = height/width;
 //            System.out.println(height + ", " + width);
             double angle = Math.atan(slope);
@@ -213,6 +223,9 @@ public class ArcherEnemy extends HumanoidEnemy {
         }
     }
 
+    /**
+     * pentru a nu  trage precis, i se calculeaza un unghi de recul
+     */
     private double getRecoilAngle(double degreeAngle){
         double res = degreeAngle + (Math.random() * RECOIL_ANGLE - RECOIL_ANGLE/2);
 
@@ -227,12 +240,10 @@ public class ArcherEnemy extends HumanoidEnemy {
 
 //    private
 
+    /**
+     * fct patrulare
+     */
     private void patrol(){
-
-//        this.checkForPlayer();
-
-//        System.out.println("pnm");
-
         this.x = this.x + patrolSpeed * (super.facingRight ? 1 : -1);
         if(super.facingRight)
             this.movementDirection = Directions.RIGHT;

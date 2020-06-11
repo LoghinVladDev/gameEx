@@ -20,6 +20,9 @@ public class MenuWindow extends JFrame {
     private SettingsPanel settingsPanel;
     private ScoresPanel scoresPanel;
 
+    /**
+     * ctor fereastra meniu
+     */
     public MenuWindow(){
         this.setSize(1280, 720);
         this.setLocationRelativeTo(null);
@@ -31,6 +34,10 @@ public class MenuWindow extends JFrame {
         return buttonsContainer;
     }
 
+    /**
+     * construieste butoane
+     * @return
+     */
     public MenuWindow buildComponents(){
         this.buttonsContainer = new JPanel();
 
@@ -57,6 +64,10 @@ public class MenuWindow extends JFrame {
         return this;
     }
 
+    /**
+     * construieste listenere ( actiuni la apasarea de butoane )
+     * @return
+     */
     public MenuWindow buildListeners(){
         this.exit.addActionListener(e->{
             System.exit(0);
@@ -93,8 +104,11 @@ public class MenuWindow extends JFrame {
         return this;
     }
 
+    /**
+     * se porneste jocul
+     */
     private void startGame(){
-        System.out.println(this.getFocusOwner());
+//        System.out.println(this.getFocusOwner());
         GameWindow gameWindow=GameWindow.getInstance()
                 .buildWindow()
                 .buildComponents();
@@ -107,7 +121,7 @@ public class MenuWindow extends JFrame {
                 .buildListeners()
                 .setFps(60);
 
-        System.out.println(this.getFocusOwner());
+//        System.out.println(this.getFocusOwner());
 //        gameWindow.startMenu();
 
 
@@ -116,13 +130,17 @@ public class MenuWindow extends JFrame {
 
         gameWindow.setFocusableWindowState(true);
         gameWindow.requestFocus();
-        System.out.println(this.getFocusOwner());
+//        System.out.println(this.getFocusOwner());
 
         gameWindow.startGame();
-        System.out.println(this.getFocusOwner());
+//        System.out.println(this.getFocusOwner());
 
     }
 
+    /**
+     * construieste layout ( unde se vor afla)
+     * @return
+     */
     public MenuWindow buildLayout(){
 
         this.add(this.buttonsContainer, BorderLayout.NORTH);

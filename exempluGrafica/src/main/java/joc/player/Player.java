@@ -13,10 +13,17 @@ import joc.projectile.ProjectileDirection;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+/**
+ * Obiectul jucator
+ */
 public class Player {
     boolean combinedMovement = false;
 
     private int keyCount = 0;
+
+    /**
+     * Campuri detectie inamici
+     */
     private static final int REGULAR_ENEMY_DETECTION_CIRCLE_RADIUS = 300;
     private static final int ROCK_THROWER_ENEMY_DETECTION_CIRCLE_RADIUS = 600;
     private static final int ARCHER_ENEMY_DETECTION_CIRCLE_RADIUS = 1000;
@@ -28,6 +35,10 @@ public class Player {
 
     private int heartsCount = 3;
 
+    /**
+     * Returneaza nr "vieti" ale jucatorului
+     * @return heartsCount
+     */
     public int getHeartsCount() {
         return heartsCount;
     }
@@ -40,6 +51,10 @@ public class Player {
 
     private PlayerStatus locationStatus = PlayerStatus.PLAYER_NO_COLLIDE;
 
+    /**
+     * Ne spune unde se afla player-ul, relativ la ce? => e in apa, e langa un perete etc.
+     * @return status locatie
+     */
     public PlayerStatus getLocationStatus() {
         return locationStatus;
     }
@@ -48,10 +63,18 @@ public class Player {
 
     private List<HumanoidEnemy> surroundingEnemies;
 
+    /**
+     * Returneaza o lista cu inamicii in range de 1 patratel
+     * @return Lista de inamici
+     */
     public List<HumanoidEnemy> getSurroundingEnemies() {
         return surroundingEnemies;
     }
 
+    /**
+     * Ne spune incotro tinteste player-ul
+     * @return directia urm. proiectil
+     */
     public ProjectileDirection getNextProjectileDirection() {
         return projectileDirection;
     }
@@ -61,24 +84,45 @@ public class Player {
     private float x;
     private float y;
 
+    /**
+     * Getter locatie horiz.
+     * @return x
+     */
     public float getX() {
         return x;
     }
 
+    /**
+     * Getter locatie vertical
+     * @return y
+     */
     public float getY() {
         return y;
     }
 
+    /**
+     * Isi ia o lovitura. Daca nu mai are vieti, die
+     */
     public void getHit(){
         this.heartsCount--;
         if(this.heartsCount <= 0)
             this.dead = true;
     }
 
+    /**
+     * este player-ul mort
+     * @return true daca da, false daca nu
+     */
     public boolean isDead() {
         return dead;
     }
 
+    /**
+     * Ctor player
+     * @param x pozitie horiz start
+     * @param y pozitie vert start
+     * @param spriteSheet spritesheet-ul de pe care sa-si ia grafica
+     */
     public Player(float x, float y, SpriteSheet spriteSheet){
         this.x = x;
         this.y = y;
@@ -87,8 +131,10 @@ public class Player {
         this.surroundingEnemies = new ArrayList<>();
     }
 
-
-
+    /**
+     * Setter pt lista de inamici
+     * @param enemies lista inamici
+     */
     public void setEnemies(List<Enemy> enemies) {
         this.enemies = enemies;
     }
@@ -99,10 +145,18 @@ public class Player {
      */
     private boolean facingRight = true;
 
+    /**
+     * Setter pt listener-ul de miscare (creat in GameWindow)
+     * @param movementListener listener
+     */
     public void setMovementListener(MovementListener movementListener) {
         this.movementListener = movementListener;
     }
 
+    /**
+     * Redesena jucatorul
+     * @param g unde il desenam
+     */
     public void draw(Graphics g){
         g.drawImage(
                 facingRight ? this.playerSpriteRight : this.playerSpriteLeft,
@@ -112,7 +166,53 @@ public class Player {
                 SpriteSheet.SPRITE_HEIGHT,
                 null
         );
+
+        Ellipse2D regularEnemyDetectionCircle = new Ellipse2D.Float(
+                this.x-(float) REGULAR_ENEMY_DETECTION_CIRCLE_RADIUS / 2,
+                this.y- (float)REGULAR_ENEMY_DETECTION_CIRCLE_RADIUS / 2,
+                REGULAR_ENEMY_DETECTION_CIRCLE_RADIUS,
+                REGULAR_ENEMY_DETECTION_CIRCLE_RADIUS
+        );
+
+        Ellipse2D rockThrowerEnemyDetectionCircle = new Ellipse2D.Float(
+                this.x - (float) ROCK_THROWER_ENEMY_DETECTION_CIRCLE_RADIUS / 2,
+                this.y- (float)ROCK_THROWER_ENEMY_DETECTION_CIRCLE_RADIUS / 2,
+                ROCK_THROWER_ENEMY_DETECTION_CIRCLE_RADIUS,
+                ROCK_THROWER_ENEMY_DETECTION_CIRCLE_RADIUS
+        );
+        Ellipse2D archerDetectionCircle = new Ellipse2D.Float(
+                this.x - (float) ARCHER_ENEMY_DETECTION_CIRCLE_RADIUS / 2,
+                this.y- (float)ARCHER_ENEMY_DETECTION_CIRCLE_RADIUS / 2,
+                ARCHER_ENEMY_DETECTION_CIRCLE_RADIUS,
+                ARCHER_ENEMY_DETECTION_CIRCLE_RADIUS
+        );
+
+        // decomenteaza pentru a vedea cercurile de detectie ale inamicilor
+//        g.setColor(Color.GREEN);
+//        g.drawOval(
+//                (int)(this.x-(float) REGULAR_ENEMY_DETECTION_CIRCLE_RADIUS / 2),
+//                (int)(this.y- (float)REGULAR_ENEMY_DETECTION_CIRCLE_RADIUS / 2),
+//                REGULAR_ENEMY_DETECTION_CIRCLE_RADIUS,
+//                REGULAR_ENEMY_DETECTION_CIRCLE_RADIUS);
+//
+//        g.setColor(Color.BLUE);
+//        g.drawOval(
+//                (int)(this.x - (float) ROCK_THROWER_ENEMY_DETECTION_CIRCLE_RADIUS / 2),
+//                (int)(this.y- (float)ROCK_THROWER_ENEMY_DETECTION_CIRCLE_RADIUS / 2),
+//                ROCK_THROWER_ENEMY_DETECTION_CIRCLE_RADIUS,
+//                ROCK_THROWER_ENEMY_DETECTION_CIRCLE_RADIUS);
+//        g.setColor(Color.RED);
+//        g.drawOval(
+//                (int)(this.x-(float) ARCHER_ENEMY_DETECTION_CIRCLE_RADIUS / 2),
+//                (int)(this.y- (float)ARCHER_ENEMY_DETECTION_CIRCLE_RADIUS / 2),
+//                ARCHER_ENEMY_DETECTION_CIRCLE_RADIUS,
+//                ARCHER_ENEMY_DETECTION_CIRCLE_RADIUS);
     }
+
+    /**
+     * Pe baza tastelor apasate, calculeaza directia in care se misca player-ul
+     * @return directie
+     */
     public Directions getInputDirection(){
         if(this.movementListener.isUp() && !this.movementListener.isDown() && !this.movementListener.isLeft() && !this.movementListener.isRight())
             return Directions.UP;
@@ -133,10 +233,14 @@ public class Player {
         return Directions.NOTHING;
     }
 
+    /**
+     * Update-ul de coordonate / actiuni / coliziune a jucatorului
+     * @param map harta, folosita la coliziuni
+     */
     public void update(Map map){
-        Directions playerOrientation = getInputDirection();
+        Directions playerOrientation = getInputDirection(); // incotro se misca
 
-        this.getDetectedByEnemies();
+        this.getDetectedByEnemies(); // vezi ce inamici sunt in campurile de detectie
 
         switch (playerOrientation){
             case DOWN: this.projectileDirection = ProjectileDirection.DOWN;                                             break;
@@ -175,6 +279,7 @@ public class Player {
             case RIGHT_UP: this.x = this.x + actualPlayerSpeed; this.y = this.y - actualPlayerSpeed; break;
         }
 
+        /// primim setul de coliziuni  ( in urma miscarii, cu ce se intersecteaza jucatorul? )
         List<PlayerStatus> status = map.isPlayerAllowed((int)this.x, (int)this.y, (int)this.x + SpriteSheet.SPRITE_WIDTH - 1, (int)this.y + SpriteSheet.SPRITE_HEIGHT - 1, playerOrientation);
 
 //        System.out.println(status);
@@ -204,6 +309,9 @@ public class Player {
             this.locationStatus = PlayerStatus.PLAYER_NO_COLLIDE;
     }
 
+    /**
+     * Apelat pentru a fi descoperit de inamici
+     */
     private void getDetectedByEnemies(){
         Ellipse2D regularEnemyDetectionCircle = new Ellipse2D.Float(
                 this.x-(float) REGULAR_ENEMY_DETECTION_CIRCLE_RADIUS / 2,
@@ -262,6 +370,13 @@ public class Player {
         }
     }
 
+    /**
+     * Opreste jucatorul daca se intersecteaza cu inamici
+     * @param oldX poz oriz veche
+     * @param oldY poz vert veche
+     * @param playerDir directia in care se deplaseaza juc.
+     * @param relativePlayerPosition unde e jucatorul pt. inamic
+     */
     private void stopIfEnemyIsAround(float oldX, float oldY, Directions playerDir, Directions relativePlayerPosition){
         switch (playerDir){
             case RIGHT:
@@ -355,14 +470,24 @@ public class Player {
         }
     }
 
+    /**
+     * "vindeca" o viata, colectezi un heart item
+     */
     public void heal(){
         this.heartsCount++;
     }
 
+    /**
+     * ia o cheie de pe jos
+     */
     public void addKey(){
         this.keyCount++;
     }
 
+    /**
+     * cate chei are juc.
+     * @return keyCount
+     */
     public int getKeyCount() {
         return keyCount;
     }

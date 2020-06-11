@@ -43,6 +43,10 @@ public class UI {
         this.heartCount = player.getHeartsCount();
     }
 
+    /**
+     * pe baza a cate chei / inimi are, deseneaza mai la dreapta cate una
+     * @param g
+     */
     public void draw(Graphics g){
         for(int i = 0; i < heartCount; i++){
             g.drawImage(

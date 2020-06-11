@@ -8,6 +8,12 @@ import joc.window.GameWindow;
 
 import java.util.List;
 
+/**
+ * refer to archer enemy.
+ *
+ * dist. de aruncare e mai mica
+ * nu arunca cu sageti, arunca cu pietre
+ */
 public class RockThrowerEnemy extends HumanoidEnemy {
 
     private static final int DEFAULT_ROCK_THROW_DISTANCE = 250;
@@ -228,10 +234,6 @@ public class RockThrowerEnemy extends HumanoidEnemy {
 //    private
 
     private void patrol(){
-
-//        this.checkForPlayer();
-
-//        System.out.println("pnm");
 
         this.x = this.x + patrolSpeed * (super.facingRight ? 1 : -1);
         if(super.facingRight)

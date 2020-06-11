@@ -3,6 +3,9 @@ package joc.listener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+/**
+ * listener pentru input miscare
+ */
 public class MovementListener implements KeyListener {
 
     private boolean up;
@@ -10,18 +13,34 @@ public class MovementListener implements KeyListener {
     private boolean left;
     private boolean right;
 
+    /**
+     * apasat jos
+     * @return
+     */
     public boolean isDown() {
         return down;
     }
 
+    /**
+     * apasat stg
+     * @return
+     */
     public boolean isLeft() {
         return left;
     }
 
+    /**
+     * apasat drp
+     * @return
+     */
     public boolean isRight() {
         return right;
     }
 
+    /**
+     * apasat sus
+     * @return
+     */
     public boolean isUp() {
         return up;
     }
@@ -32,8 +51,6 @@ public class MovementListener implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-
-        System.out.println("apasat" + e.getKeyChar());
         switch (e.getKeyChar()) {
             case 'w' :
                 this.up = true;

@@ -10,6 +10,9 @@ import joc.player.Player;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+/**
+ * Inamic umanoid
+ */
 public abstract class HumanoidEnemy implements Enemy {
     protected BufferedImage enemySpriteRight;
     protected BufferedImage enemySpriteLeft;
@@ -39,6 +42,9 @@ public abstract class HumanoidEnemy implements Enemy {
 
     protected boolean facingRight = true;
 
+    /**
+     * calculeaza daca dropeaza o inima la moarte
+     */
     protected void dropHeart(){
         switch (this.player.getHeartsCount()){
             case 3 : this.dropChance = LOW_DROP_CHANCE; break;
@@ -62,10 +68,18 @@ public abstract class HumanoidEnemy implements Enemy {
 
     public abstract void getHit();
 
+    /**
+     * true daca merge dupa jucator, false otherwise
+     * @return
+     */
     public boolean isFollowingPlayer() {
         return isFollowingPlayer;
     }
 
+    /**
+     * setter pt follow player
+     * @param followingPlayer
+     */
     public void setFollowingPlayer(boolean followingPlayer) {
         isFollowingPlayer = followingPlayer;
     }
@@ -74,12 +88,18 @@ public abstract class HumanoidEnemy implements Enemy {
         this.player = player;
     }
 
+    /**
+     * incotro este player-ul fata de inamic cand acesta colideaza cu el
+     * @return
+     */
     public Directions getPlayerCollisionDirection() {
         return playerCollisionDirection;
     }
 
-
-
+    /**
+     * verif daca colideaza cu player-ul
+     * @return
+     */
     public boolean collidesWithPlayer(){
         if(this.player.isDead()) {
             this.playerCollisionDirection = Directions.NOTHING;
@@ -157,6 +177,9 @@ public abstract class HumanoidEnemy implements Enemy {
 //        return collisionStatus;
     }
 
+    /**
+     * schimba orientarea inamicului
+     */
     public void swapDirection(){
         if(this.frameTimeout > 0) {
             this.frameTimeout--;
@@ -179,6 +202,12 @@ public abstract class HumanoidEnemy implements Enemy {
         return y;
     }
 
+    /**
+     * ctor protected, nu putem construi un inamic, folosit de construirea inamicului propriu zis
+     * construieste partea de "uman", nu caracteristici
+     * @param x hor
+     * @param y ver
+     */
     protected HumanoidEnemy(float x, float y){
         this.x = x;
         this.y = y;
@@ -186,8 +215,15 @@ public abstract class HumanoidEnemy implements Enemy {
         //this.enemySpriteRight = sheet.getAsset(AssetList.ENEMY_REGULAR_RIGHT);
     }
 
+    /**
+     * fiecare umanoid face altceva la update
+     */
     public abstract void update();
 
+    /**
+     * Redraw
+     * @param g unde
+     */
     public void draw(Graphics g){
         g.drawImage(
                 facingRight ? this.enemySpriteRight : this.enemySpriteLeft,

@@ -6,27 +6,48 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+
 public class TestSQLite {
+    public static boolean thread1Out = true;
+    public static int i = 5;
     public static void main(String[] args) {
-        Connection.getInstance().connect();
+        Thread t1 = new Thread(){
+            private int output = 5;
+            public void run(){
+                while(output > 0){
 
-        try{
-            PreparedStatement statementSelect = Connection
-                    .getInstance()
-                    .getConnection()
-                    .prepareStatement("SELECT * FROM high_scores");
+                    while(!thread1Out);
 
-            ResultSet rs = statementSelect.executeQuery();
-
-            while(rs.next()){
-                System.out.println(rs.getInt(1) + ", " + rs.getString(2) + ", " + rs.getInt(3));
+                    output--;
+                    System.out.println(i);
+                    thread1Out = false;
+                }
             }
+        };
+        Thread t2 = new Thread() {
+            private int output = 5;
 
-        } catch ( SQLException e){
-            e.printStackTrace();
-        }
+            public void run() {
+                while (output > 0) {
 
-        Connection.getInstance().disconnect();
+                    while(thread1Out);
+
+                    output--;
+                    i++;
+
+                    thread1Out = true;
+                }
+            }
+        };
+
+        t1.start();
+        t2.start();
+//        try{
+//            Thread.sleep(1000);
+//        } catch (InterruptedException ignored){
+//
+//        }
+        System.out.println("main");
     }
 
 }

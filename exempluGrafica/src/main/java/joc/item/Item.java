@@ -22,6 +22,10 @@ public abstract class Item {
 
     protected boolean toBeDeSpawned = false;
 
+    /**
+     * daca player-ul a luat item-ul ,trebuie scos din cadru
+     * @return
+     */
     public boolean isToBeDeSpawned() {
         return toBeDeSpawned;
     }
@@ -36,6 +40,9 @@ public abstract class Item {
 
     protected BufferedImage sprite;
 
+    /**
+     * bounce sus-jos
+     */
     protected void animate(){
         if(this.timeout == 0) {
             if (up) {
@@ -59,6 +66,13 @@ public abstract class Item {
         }
     }
 
+    /**
+     * ctor
+     * @param player
+     * @param sheet
+     * @param xPos
+     * @param yPos
+     */
     protected Item(Player player, SpriteSheet sheet, float xPos, float yPos){
         this.player = player;
         this.sheet = sheet;

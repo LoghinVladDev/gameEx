@@ -54,6 +54,10 @@ public class Spike implements Enemy {
         );
     }
 
+    /**
+     * ne spune daca jucatorul este pe tepi
+     * @return true daca da, false daca nu
+     */
     private boolean isPlayerOver(){
         Rectangle spikeMesh = new Rectangle(
                 (int) this.x,
@@ -72,14 +76,17 @@ public class Spike implements Enemy {
         return spikeMesh.intersects(playerMesh);
     }
 
+    /**
+     * daca playerul calca pe tepi, trec 2 secunde si ies la suprafata
+     * stau la suprafata 5 secunde, dupa care intra inapoi
+     * daca player-ul ii atinge cat timp sunt la suprafata, isi ia damage
+     */
     @Override
     public void update() {
         if(this.isPlayerOver()){
-//            System.out.println("ESTE PESTE TEPI");
             if(!this.shown && !this.active) {
                 this.showTimer = FRAME_COUNT_SHOW;
                 this.active = true;
-//                System.out.println("A inceput timer-ul pt afisare");
             }
             else if(this.shown && this.active) {
                 if(this.hitPlayerTimer == 0) {
@@ -92,11 +99,9 @@ public class Spike implements Enemy {
         }
         if(!this.shown && this.active) {
             if(this.showTimer > 0) {
-//                System.out.println("Asteptam...");
                 this.showTimer--;
             }
             else {
-//                System.out.println("S-a afisat");
                 this.shown = true;
                 this.sprite = this.spriteShown;
                 this.onSurfaceTimer = FRAME_COUNT_ON_SURFACE;

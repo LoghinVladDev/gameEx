@@ -9,6 +9,10 @@ public class Tower extends Tile{
 
     private static final int TOWER_SCORE_POINTS = 600;
 
+    /**
+     * Ctor
+     * @param sheet
+     */
     public Tower(SpriteSheet sheet){
         super(
                 AssetList.TOWER,
@@ -18,6 +22,11 @@ public class Tower extends Tile{
         System.out.println("s-a creat turn");
     }
 
+    /**
+     * Called when rock hits tower. Aici face mai multe
+     * Calculeaza daca piatra care a intrat in tile trebuie sa distruga tile-ul sau nu
+     */
+    @Override
     public void destroy() {
 //        System.out.println("BOLOVAN PESTE TURN LA x = " + this.x + ", y = " + this.y);
         if(this.type.equals(AssetList.DAMAGED_CASTLE_GRASS_TILE))

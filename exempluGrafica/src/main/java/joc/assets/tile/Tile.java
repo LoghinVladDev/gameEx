@@ -7,20 +7,35 @@ import joc.player.Player;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+/**
+ * O patratica in harta , fara caracteristici speciale
+ */
 public class Tile {
     protected BufferedImage tileSprite;
     protected AssetList type;
     protected SpriteSheet sheet;
     protected int x, y;
 
+    /**
+     * ctor
+     */
     public Tile(){
         this.tileSprite = null;
     }
 
+    /**
+     * ce tip de patratica este
+     * @return tip
+     */
     public AssetList getType() {
         return type;
     }
 
+    /**
+     * ctor cu parametrii
+     * @param spriteType tipul de patrat
+     * @param sheet de unde incarca
+     */
     public Tile(AssetList spriteType, SpriteSheet sheet) {
         this.type = spriteType;
         if (spriteType.ordinal() >= 8 && spriteType.ordinal() != 20)
@@ -37,14 +52,25 @@ public class Tile {
         }
     }*/
 
+    // fct default de destroy, nu face prea multe.
     public void destroy(){
-//        System.out.println("BOLOVAN PESTE TILE LA x = " + this.x + ", y = " + this.y);
+
     }
 
+    /**
+     * fct default pt adaugarea unei chei la distrugere. nu face prea multe. Va fi suprascrisa de Tile-uri specifice
+     * @param player
+     */
     public void addOnDropKey(Player player){
 
     }
 
+    /**
+     * deseneaza tile-ul la ...
+     * @param x hor
+     * @param y vert
+     * @param graphics unde
+     */
     public void drawAt(int x, int y, Graphics graphics){
         graphics.drawImage(
                 this.tileSprite,
@@ -56,11 +82,20 @@ public class Tile {
         );
     }
 
+    /**
+     * pune poz. tile-ului
+     * @param x hor
+     * @param y vert
+     */
     public void setLocation(int x, int y){
         this.x = x;
         this.y = y;
     }
 
+    /**
+     * redeseneaza
+     * @param graphics unde
+     */
     public void draw(Graphics graphics){
         this.drawAt(this.x, this.y, graphics);
     }

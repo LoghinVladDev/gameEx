@@ -5,14 +5,21 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
+/**
+ * Obiectul folosit pt incarcarea usoara sprite-urilor
+ * are toate sprite-urile in o imagine, decupeaza ce ii trebuie
+ */
 public class SpriteSheet {
     private BufferedImage spriteImage;
     private static final int DECAL_SPRITE_WIDTH = 48 , DECAL_SPRITE_HEIGHT = 48;
     public static final int SPRITE_WIDTH=36,SPRITE_HEIGHT=36;//constante si nu pot fi  modificate
+
+    /**
+     * Ctor
+     * @param bufferedImageLocation unde se afla imaginea
+     */
     public SpriteSheet(String bufferedImageLocation)  {
         try {
-
-
             this.spriteImage = ImageIO.read(SpriteSheet.class.getResource(bufferedImageLocation));
         }
         catch (IOException exception){
@@ -25,6 +32,12 @@ public class SpriteSheet {
         return spriteImage;
     }
 
+    /**
+     * fct care roteste un asset (folosita la proj. inamice
+     * @param bimg imaginea asset-ului
+     * @param angle unghi
+     * @return imaginea rotita
+     */
     public static BufferedImage rotate(BufferedImage bimg, double angle) {
 
         int w = bimg.getWidth();
@@ -87,6 +100,11 @@ public class SpriteSheet {
         }
     }
 
+    /**
+     * ordinalul asset-ului , folosit la incarcarea hartii
+     * @param ordinal
+     * @return
+     */
     public AssetList getAssetTypeByNumber(int ordinal){
         switch (ordinal){
             case 0:  return AssetList.GRASS_TILE;
@@ -130,6 +148,12 @@ public class SpriteSheet {
         }
     }
 
+    /**
+     * ret. imaginea de la poz hor x, vert y
+     * @param x hor
+     * @param y vert
+     * @return imagine
+     */
     public BufferedImage crop(int x, int y){
         return this.spriteImage.getSubimage(x * DECAL_SPRITE_WIDTH, y * DECAL_SPRITE_HEIGHT, DECAL_SPRITE_WIDTH, DECAL_SPRITE_HEIGHT);
     }

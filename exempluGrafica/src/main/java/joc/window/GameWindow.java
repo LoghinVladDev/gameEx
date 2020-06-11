@@ -43,24 +43,14 @@ public class GameWindow extends JFrame implements ActionListener {
     private static GameWindow instance;
     private JPanel interiorPanel;
 
+    /**
+     * Singleton. O singura fereastra de joc
+     * @return
+     */
     public static GameWindow getInstance(){
         if(GameWindow.instance == null)
             GameWindow.instance = new GameWindow(40,20);
         return instance;
-    }
-
-    public void startMenu(){
-        System.out.println(this.getFocusOwner());
-        System.out.println(Arrays.toString(this.getKeyListeners()));
-//        this.drawingCanvas.setVisible(false);
-
-        this.menuPanel.setSize(100,100);
-
-
-//        this.add(this.menuPanel);
-//        this.menuPanel.setVisible(true);
-
-//        this.startGame();
     }
 
     private Map map;
@@ -86,16 +76,20 @@ public class GameWindow extends JFrame implements ActionListener {
 
     private MovementListener movementListener;
 
-    public GameWindow setMapToLoad(String mapToLoad) {
-        this.mapToLoad = mapToLoad;
-        return this;
-    }
-
+    /**
+     * ctor private. singleton nu poate fi construit direct
+     * @param horizontalSpriteCount
+     * @param verticalSpriteCount
+     */
     private GameWindow(int horizontalSpriteCount, int verticalSpriteCount){
         this.horizontalSpriteCount=horizontalSpriteCount;
         this.verticalSpriteCount=verticalSpriteCount;
     }
 
+    /**
+     * constr. fereastra
+     * @return
+     */
     public GameWindow buildWindow(){
         this.setSize(horizontalSpriteCount* SpriteSheet.SPRITE_WIDTH,
                 verticalSpriteCount*SpriteSheet.SPRITE_HEIGHT);
@@ -116,6 +110,10 @@ public class GameWindow extends JFrame implements ActionListener {
         return this;
     }
 
+    /**
+     * constr componentele din fereastra
+     * @return
+     */
     public GameWindow buildComponents(){
 //        this.add(interiorPanel);
 
@@ -125,13 +123,8 @@ public class GameWindow extends JFrame implements ActionListener {
         this.drawingCanvas.setMinimumSize(new Dimension(this.getWidth(),this.getHeight()));
         this.drawingCanvas.setFocusable(false);
 
-//        this.add(this.drawingCanvas);
-
         this.movementListener = new MovementListener();
-
         this.sheet = new SpriteSheet(SPRITE_SHEET_DEFAULT_LOCATION);
-
-//        this.menuPanel = new MenuPanel();
         this.map = new Map(this.horizontalSpriteCount, this.verticalSpriteCount, this.sheet);
 
         this.loadMap();
@@ -139,47 +132,46 @@ public class GameWindow extends JFrame implements ActionListener {
         return this;
     }
 
+    /**
+     * incarca urmatoarea harta
+     */
     private void loadMap(){
-//        System.out.println("incarcare");
         this.map.setKeyCount(Map.MAP_DEFAULT_KEY_COUNT);
-
-//        joc.map.loadMap(Map.GAME_MAP_1);
         this.mapToLoad = this.map.getMapsList().get(0);
         map.loadMap(this.mapToLoad);
         map.getMapsList().remove(this.mapToLoad);
 
-        this.player = map.getPlayer();
+        this.player = map.getPlayer(); // ia player-ul din harta
         this.player.setMovementListener(this.movementListener);
-        this.enemies = map.getEnemyList();
+        this.enemies = map.getEnemyList(); //ia inamicii din harta
 
-        this.ui = new UI(this, this.sheet).setPlayer(this.player);
+        this.ui = new UI(this, this.sheet).setPlayer(this.player); // fa un UI pe baza player-ului (0 chei, 3 inimi)
 
         for (Enemy e : this.enemies) {
-            e.setPlayer(this.player);
+            e.setPlayer(this.player); // pt fiecare inamic, da-i player-ul
         }
 
-        this.player.setEnemies(this.enemies);
+        this.player.setEnemies(this.enemies); // da-i player-ului lista de inamici
 
-        this.enemyAI = EnemyAI.getInstance();
-        this.enemyAI.setPlayer(this.player);
-        this.enemyAI.setMap(this.map);
-        this.enemyAI.setEnemies(this.enemies);
+        this.enemyAI = EnemyAI.getInstance(); // controller inamici  (singleton)
+        this.enemyAI.setPlayer(this.player); // da-i lista inamici
+        this.enemyAI.setMap(this.map); //da-i harta
+        this.enemyAI.setEnemies(this.enemies); // da-i inamicii
 
-        this.projectiles = new ArrayList<>();
+        this.projectiles = new ArrayList<>(); // creaza  o noua lista cu proj
 
     }
 
     public GameWindow buildLayout(){
-//        this.add(this.menuPanel);
         this.add(this.drawingCanvas);//am adaugat pe ce vom desena imaginile
-
-//        this.menuPanel.setVisible(false);
-
-//        this.interiorPanel.setVisible(false);
         this.pack();
         return this;
     }
 
+    /**
+     * init fereastra
+     * @return
+     */
     public GameWindow initialize(){
         BufferStrategy bufferStrategy=this.drawingCanvas.getBufferStrategy();
 
@@ -200,11 +192,14 @@ public class GameWindow extends JFrame implements ActionListener {
         return this;
     }
 
+    /**
+     * redesenare toate obiecte
+     */
     public void redraw(){
-        BufferStrategy bufferStrategy=this.drawingCanvas.getBufferStrategy();
+        BufferStrategy bufferStrategy=this.drawingCanvas.getBufferStrategy(); // buffering = stocarea de imagini in viitor pentru a afisa in o modalitate usoara. Desenare pe "pagini" (buffere)
 
         if(bufferStrategy==null){
-            this.drawingCanvas.createBufferStrategy(3);
+            this.drawingCanvas.createBufferStrategy(3); // 3 buffere = 3 imagini in avans fata de cea de pe ecran
             bufferStrategy=this.drawingCanvas.getBufferStrategy();
         }
         Graphics graphics=bufferStrategy.getDrawGraphics();
@@ -230,6 +225,9 @@ public class GameWindow extends JFrame implements ActionListener {
         graphics.dispose();//scapam de graficele astea
     }
 
+    /**
+     * apelata pt a crea o piatra aruncata de jucator
+     */
     public void playerThrowsRock(){
         this.projectiles.add(
                 new RockProjectile(
@@ -244,32 +242,48 @@ public class GameWindow extends JFrame implements ActionListener {
         );
     }
 
+    /**
+     * apelata pt piatra inamic
+     * @param x
+     * @param y
+     * @param angle
+     */
     public void enemyThrowsRock(int x, int y, double angle){
+        /// factory + builder pattern (creational pattern)
         this.projectiles.add(
-                new RockProjectile(
-                    x,
-                    y,
-                    angle,
-                    this.sheet,
-                    this.map,
-                    this
-                )
+                new Projectile.ProjectileFactory()
+                        .withWindow(this)
+                        .withStartingPosition(x , y)
+                        .withAngle(angle)
+                        .withMap(this.map)
+                        .withSheet(this.sheet)
+                        .buildRock()
         );
     }
 
+    /**
+     * apelata pt sageata inamic
+     * @param x
+     * @param y
+     * @param angle
+     */
     public void enemyThrowsArrow(int x, int y, double angle){
+        /// factory + builder pattern (creational pattern)
         this.projectiles.add(
-                new ArrowProjectile(
-                        x,
-                        y,
-                        angle,
-                        this.sheet,
-                        this.map,
-                        this
-                )
+                new Projectile.ProjectileFactory()
+                    .withWindow(this)
+                    .withStartingPosition(x , y)
+                    .withAngle(angle)
+                    .withMap(this.map)
+                    .withSheet(this.sheet)
+                    .buildArrow()
         );
     }
 
+    /**
+     * listenerele de taste
+     * @return
+     */
     public GameWindow buildListeners(){
         this.addKeyListener( this.movementListener );
 
@@ -292,56 +306,56 @@ public class GameWindow extends JFrame implements ActionListener {
                 }
             }
         );
-        //this.setFocusable(true);
         return this;
     }
 
+    /**
+     * porneste jocul
+     */
     public void startGame(){
 
-//        this.setFocusable(true);
-//        this.buildListeners();
-//        System.out.println(Arrays.toString(this.getKeyListeners()));
-        System.out.println(this.getFocusOwner());
-//        System.out.println(this.paramString());
-//        this.remove(this.menuPanel);
-//        this.buildListeners();
-//        this.requestFocus();
-//        this.drawingCanvas.setVisible(true);
         this.revalidate();
         this.repaint();
-//        this.pack();
-        int sleepTimer = 1000/this.fps;
 
-        Thread gameThread = new Thread(() -> {
-            long startFrameTime = 0;
-            long endFrameTime = 0;
-            long frameTime = 0;
-            int frameTimeMS;
-            while (true) {
-                startFrameTime = System.nanoTime();
+        int sleepTimer = 1000/this.fps; // durata unui cadru = 1000ms / cate cadre
 
-                update();
+        // thread-ul de logica a jocului ( update-uri logice, merge in paralel cu afisarea pe ecran)
+        Thread gameThread = new Thread(
+            () -> {
+                long startFrameTime = 0;
+                long endFrameTime = 0;
+                long frameTime = 0;
+                int frameTimeMS;
+                while (true) { /// while (true) = infinite loop
+                    startFrameTime = System.nanoTime();
 
-                endFrameTime = System.nanoTime();
+                    update(); // toate instructiunile jocului
 
-                frameTime = endFrameTime - startFrameTime;
+                    endFrameTime = System.nanoTime();
 
-                frameTimeMS = (int) (frameTime / 1000000);
+                    frameTime = endFrameTime - startFrameTime;
 
-                try {
-                    //System.out.println(frameTimeMS);
-                    if (sleepTimer >= frameTimeMS)
-                        Thread.sleep(sleepTimer - frameTimeMS);
-                } catch (InterruptedException exception) {
-                    //System.out.println(exception);
+                    frameTimeMS = (int) (frameTime / 1000000); // cat a durat cadrul in MS
+
+                    try {
+                        //System.out.println(frameTimeMS);
+                        if (sleepTimer >= frameTimeMS) // daca durata cadr. < cat ar trebui sa dureze
+                            Thread.sleep(sleepTimer - frameTimeMS); // asteapta restul timpului
+                    } catch (InterruptedException ignored) {
+
+                    }
                 }
             }
-        });
+        );
 
         gameThread.start();
 
     }
 
+    /**
+     * cat scor avem la final
+     * @return
+     */
     private int countHighScore(){
         int score = 0;
 
@@ -352,7 +366,7 @@ public class GameWindow extends JFrame implements ActionListener {
                 if(e1.isDead())
                     score += 100;
 
-                System.out.println(score);
+//                System.out.println(score);
 
             } catch ( ClassCastException ignored ){
 
@@ -362,7 +376,7 @@ public class GameWindow extends JFrame implements ActionListener {
 
                     if(e2.isDead())
                         score += 50;
-                    System.out.println(score);
+//                    System.out.println(score);
 
                 } catch ( ClassCastException ignored1 ){
 
@@ -372,7 +386,7 @@ public class GameWindow extends JFrame implements ActionListener {
 
                         if(e3.isDead())
                             score += 150;
-                        System.out.println(score);
+//                        System.out.println(score);
 
                     } catch ( ClassCastException ignored2 ){
 
@@ -386,6 +400,10 @@ public class GameWindow extends JFrame implements ActionListener {
         return score;
     }
 
+    /**
+     * inserarea scor in BD
+     * @param playerName
+     */
     private void updateScoreIntoDatabase(String playerName){
         try{
 
@@ -405,6 +423,9 @@ public class GameWindow extends JFrame implements ActionListener {
         }
     }
 
+    /**
+     * asteapta cateva cadre pana iesi / pana incarci harta
+     */
     private void waitBeforeExit(){
         boolean exit = false;
 
@@ -441,28 +462,23 @@ public class GameWindow extends JFrame implements ActionListener {
         this.ui.setKeyCount(this.player.getKeyCount());
     }
 
+    /**
+     * update-ul obiectelor
+     */
     public void update(){
-//        System.out.println(this.joc.player.getKeyCount() + ", " + this.joc.map.getKeyCount());
 
-        if(this.player.getKeyCount() >= this.map.getKeyCount())
+        if(this.player.getKeyCount() >= this.map.getKeyCount()) // avem cate chei avem nevoie ca sa finalizam nivelul ?
             this.waitBeforeExit();
 
-        if(this.player.getHeartsCount() > 0) {
-            this.player.update(this.map);
-        } else if(this.player.getHeartsCount() <= 0) {
+        if(this.player.getHeartsCount() > 0) { // este player alive?
+            this.player.update(this.map); // update player
+        } else if(this.player.getHeartsCount() <= 0) { // a murit?
             this.waitBeforeExit();
         }
-        this.enemyAI.update();
-        this.projectiles.removeIf(r -> !r.update());
+        this.enemyAI.update(); // update each enemy
+        this.projectiles.removeIf(r -> !r.update()); // update each projectile and remove if destroyed
 
-        Item toBeRemoved = null;
-
-//        Item.getGameWorldItems().forEach(e->{
-//            if(e.isToBeDeSpawned()){
-//                toBeRemoved = e;
-//            } else
-//                e.update();
-//        });
+        Item toBeRemoved = null; // itemele din joc, update pe fiecare si scoate-l pe cel luat de jucator
 
         for(Item i : Item.getGameWorldItems()){
             if(i.isToBeDeSpawned())
@@ -472,14 +488,14 @@ public class GameWindow extends JFrame implements ActionListener {
             }
         }
 
-        this.countKeys();
+        this.countKeys(); //pune keys pe UI
 
         if(toBeRemoved != null){
             Item.getGameWorldItems().remove(toBeRemoved);
         }
 
-        this.ui.update();
-        this.redraw();
+        this.ui.update(); // update UI
+        this.redraw(); // redeseneaza tot
     }
 
 
@@ -493,6 +509,6 @@ public class GameWindow extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        System.out.println(e);
+//        System.out.println(e);
     }
 }

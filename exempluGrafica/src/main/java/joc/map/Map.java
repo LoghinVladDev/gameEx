@@ -30,10 +30,18 @@ public class Map {
 
     private List<Enemy> enemyList;
 
+    /**
+     * Returneaza inamicii incarcati
+     * @return lista inamici
+     */
     public List<Enemy> getEnemyList() {
         return enemyList;
     }
 
+    /**
+     * Returneaza player-ul
+     * @return
+     */
     public Player getPlayer() {
         return player;
     }
@@ -45,18 +53,36 @@ public class Map {
 
     private List<String> mapsList = new ArrayList<>();
 
+    /**
+     * getter latime
+     * @return
+     */
     public int getWidth() {
         return width;
     }
 
+    /**
+     * getter inaltime
+     * @return
+     */
     public int getHeight() {
         return height;
     }
 
+    /**
+     * seteaza cate chei vor aparea pe harta
+     * @param keyCount
+     */
     public void setKeyCount(int keyCount) {
         this.keyCount = keyCount;
     }
 
+    /**
+     * Ctor harta
+     * @param width cate patratele latime
+     * @param height cate inaltime
+     * @param spriteSheet de unde isi va lua grafica
+     */
     public Map(int width, int height, SpriteSheet spriteSheet){
         this.width = width;
         this.height = height;
@@ -67,10 +93,17 @@ public class Map {
         this.addMapsToList();
     }
 
+    /**
+     * lista harti
+     * @return
+     */
     public List<String> getMapsList() {
         return mapsList;
     }
 
+    /**
+     * init harti
+     */
     private void addMapsToList(){
 //        this.mapsList.add(GAME_MAP_1); // TODO : REMOVE THIS LINE AFTER RELEASE
         this.mapsList.add(GAME_MAP_3);
@@ -78,10 +111,19 @@ public class Map {
         this.mapsList.add(GAME_MAP_1);
     }
 
+    /**
+     * cate chei am pe harta
+     * @return
+     */
     public int getKeyCount() {
         return keyCount;
     }
 
+    /**
+     * generare chei ( un hash : castel - > boolean , castel -> true = castelul are cheie, false = castelul nu are cheie )
+     * @param castle // lista tuturor castelelor
+     * @return // hash-u
+     */
     private java.util.Map<Tile, Boolean> generateKeys(List<Tile> castle){
         java.util.Map<Tile, Boolean> hasKey = new HashMap<>();
 
@@ -105,6 +147,10 @@ public class Map {
         return hasKey;
     }
 
+    /**
+     * incarcare harta de la path
+     * @param path path-ul hartii
+     */
     public void loadMap(String path) {
         AssetList assetType;
 
@@ -174,14 +220,24 @@ public class Map {
 
     }
 
+    /**
+     * desenarea hartii ( fiecare tile se redeseanaza)
+     * @param graphics unde va desena
+     */
     public void drawMap(Graphics graphics){
-        for(int i = 0; i < this.mapLayout.length; i++){
-            for(int j = 0; j < this.mapLayout[i].length; j++){
-                this.mapLayout[i][j].draw(graphics);
+        for (Tile[] tileRow : this.mapLayout) {
+            for (Tile tile : tileRow) {
+                tile.draw(graphics);
             }
         }
     }
 
+    /**
+     * detecteaza coliziunile proiectilelor, apeleaza destroy() per obiect pentru a "distruge" tile-ul, se distruge daca e configurat sa o faca
+     * @param x horiz piatra
+     * @param y vert piatra
+     * @return true daca a intrat in ceva, false otherwise
+     */
     public boolean detectProjectileCollision(int x, int y){
         if(x >= 0 && x < this.width && y >= 0 && y < this.height) {
             this.mapLayout[y][x].destroy();
@@ -203,7 +259,12 @@ public class Map {
         return false;
     }
 
-
+    /**
+     * pietre inamici coliziune, nu apeleaza destroy(), dar verifica daca a intrat in ceva
+     * @param x horiz proj
+     * @param y vert proj
+     * @return true daca a intrat in cv, false otherwise
+     */
     public boolean detectEnemyProjectileCollision(int x, int y){
         if(x >= 0 && x < this.width && y >= 0 && y < this.height) {
 //            this.mapLayout[y][x].destroy();
@@ -225,8 +286,12 @@ public class Map {
         return false;
     }
 
-
-
+    /**
+     * detectare coliziune player: verifica cu fiecare Tile care are coliziune
+     * @param x horiz player
+     * @param y vert player
+     * @return status : collide, in water, no_collide
+     */
     public PlayerStatus detectCollision(int x, int y){
         if(this.mapLayout[y][x].getType().equals(AssetList.TOWER))
             return PlayerStatus.PLAYER_COLLIDE;
@@ -245,6 +310,15 @@ public class Map {
         return PlayerStatus.PLAYER_NO_COLLIDE;
     }
 
+    /**
+     * fct apleata din player, returneaza toate coliziunile la pozitia data, cu directia de miscare alease
+     * @param x1 "stanga" jucator
+     * @param y1 "sus" jucator          -> formeaza o "cutie" de coliziune
+     * @param x2 "dreapta" jucator
+     * @param y2 "jos" jucator
+     * @param direction directia in care se deplaseaza
+     * @return lista coliziuni
+     */
     public List<PlayerStatus> isPlayerAllowed(int x1, int y1, int x2, int y2, Directions direction){
         List<PlayerStatus> collisionList = new ArrayList<>();
 
@@ -278,31 +352,9 @@ public class Map {
          */
 
         PlayerStatus leftTopCorner = this.detectCollision(x1Mat, y1Mat); /// stg sus
-//        if(!status.equals(PlayerStatus.PLAYER_NO_COLLIDE))
-//            return status;
-
         PlayerStatus rightTopCorner = this.detectCollision(x2Mat, y1Mat);
-//        if(!status.equals(PlayerStatus.PLAYER_NO_COLLIDE))
-//            return status;
-
         PlayerStatus leftBottomCorner = this.detectCollision(x1Mat, y2Mat);
-//        if(!status.equals(PlayerStatus.PLAYER_NO_COLLIDE))
-//            return status;
-
         PlayerStatus rightBottomCorner = this.detectCollision(x2Mat, y2Mat);
-//        if(!status.equals(PlayerStatus.PLAYER_NO_COLLIDE))
-//            return status;
-
-       /*if(leftTopCorner.equals(PlayerStatus.PLAYER_COLLIDE)){
-           if(direction.equals(Directions.LEFT))
-               collisionList.add(PlayerStatus.PLAYER_COLLIDE_LEFT);
-           if(direction.equals(Directions.UP))
-               collisionList.add(PlayerStatus.PLAYER_COLLIDE_TOP);
-           if(direction.equals(Directions.LEFT_UP)) {
-               collisionList.add(PlayerStatus.PLAYER_COLLIDE_TOP);
-               collisionList.add(PlayerStatus.PLAYER_COLLIDE_LEFT);
-           }
-       }*/
 
         switch (direction){
             case DOWN:
