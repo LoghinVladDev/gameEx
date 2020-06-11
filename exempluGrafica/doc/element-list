@@ -1,0 +1,13 @@
+joc
+joc.assets
+joc.assets.tile
+joc.character
+joc.item
+joc.listener
+joc.map
+joc.panel
+joc.player
+joc.projectile
+joc.sql
+joc.window
+joc.window.ui
